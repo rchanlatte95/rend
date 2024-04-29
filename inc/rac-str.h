@@ -1,28 +1,22 @@
 #pragma once
-
 #include "rac-types.h"
 #include "rac-logic.h"
 
 namespace rac::string
 {
-    class str;
-    typedef const str* str_ptr;   typedef str* mut_str_ptr;
-    typedef const str& str_ref;   typedef str& mut_str_ref;
-
     #define RAC_DIGIT_TO_CHAR(x) (x + 48)
-    const i32 SSTR_BASE_BYTE_SIZE = 1024;
-    const i32 SSTR_CAPACITY = SSTR_BASE_BYTE_SIZE - sizeof(i32);
-    const i32 SSTR_MAX_LEN = SSTR_CAPACITY - 1;
+    i32 SSTR_CAPACITY = 1 << 8;
+    i32 SSTR_MAX_LEN = SSTR_CAPACITY - 1;
 
     // https://en.wikipedia.org/wiki/Whitespace_character
-    const u8 CHAR_TAB = 0x09;
-    const u8 LINE_FEED = 0x0A;
-    const u8 LINE_TAB = 0x0B;
-    const u8 FORM_FEED = 0x0C;
-    const u8 CARRIAGE_RETURN = 0x0D;
-    const u8 SPACE = 0x20;
-    const u8 NEXT_LINE = 0x85;
-    const u8 NO_BREAK_SPACE = 0xA0;
+    u8 CHAR_TAB = 0x09;
+    u8 LINE_FEED = 0x0A;
+    u8 LINE_TAB = 0x0B;
+    u8 FORM_FEED = 0x0C;
+    u8 CARRIAGE_RETURN = 0x0D;
+    u8 SPACE = 0x20;
+    u8 NEXT_LINE = 0x85;
+    u8 NO_BREAK_SPACE = 0xA0;
 
     static constexpr i32 clamp_len(i32 x)
     {
@@ -39,6 +33,9 @@ namespace rac::string
     }
     static constexpr bool whitespace(u8ptr c_ptr) { return  whitespace(*c_ptr); }
 
+    class str;
+    typedef const str* str_ptr;   typedef str* mut_str_ptr;
+    typedef const str& str_ref;   typedef str& mut_str_ref;
     class str
     {
     private:
@@ -52,7 +49,6 @@ namespace rac::string
             chars[0] = 0;
             chars[SSTR_MAX_LEN] = 0;
         }
-
         str(cstr _str)
         {
             len = (i32)strnlen_s(_str, SSTR_MAX_LEN);
@@ -64,7 +60,6 @@ namespace rac::string
             chars[len] = 0;
 #pragma warning( default : 6386)
         }
-
         str(cstr _str, i32 startIndex, i32 char_ct)
         {
             i32 start = clamp_len(startIndex);
@@ -73,7 +68,6 @@ namespace rac::string
             chars[SSTR_MAX_LEN] = 0;
             memcpy_s(chars, SSTR_MAX_LEN, _str, len);
         }
-
         str(str_ptr _str)
         {
             len = _str->len;
@@ -81,7 +75,6 @@ namespace rac::string
             chars[len] = 0;
             chars[SSTR_MAX_LEN] = 0;
         }
-
         str(str_ref _str)
         {
             len = _str.len;
@@ -89,7 +82,6 @@ namespace rac::string
             chars[len] = 0;
             chars[SSTR_MAX_LEN] = 0;
         }
-
         str(str_ptr _str, i32 startIndex, i32 char_ct)
         {
             i32 start = clamp_len(startIndex);
@@ -99,7 +91,6 @@ namespace rac::string
             chars[len] = 0;
             chars[SSTR_MAX_LEN] = 0;
         }
-
         str(str_ref _str, i32 startIndex, i32 char_ct)
         {
             i32 start = clamp_len(startIndex);
@@ -123,7 +114,8 @@ namespace rac::string
             len = ct;
             memset(chars, c, len);
         }
-        INLINE u8& operator[](i32 index) { return chars[index]; }
+
+        INLINE u8& operator[](i32 index) { return chars[(index & SSTR_MAX_LEN)]; }
         INLINE str_ref operator=(cstr rhs)
         {
             len = (i32)strnlen_s(rhs, SSTR_MAX_LEN);
@@ -332,7 +324,6 @@ namespace rac::string
             return true;
         }
     };
-
     INLINE static str operator +(str_ref lhs, str_ref rhs)
     {
         str res(lhs);

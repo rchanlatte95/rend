@@ -1,11 +1,135 @@
 #pragma once
+#pragma warning(push, 0)// Prevent warnings from libraries I can't fix.
+
 #include <float.h>
 #include <math.h>
+
 #include "rac-types.h"
 #include "rac-str.h"
 
+#pragma warning(pop)
+
+
 namespace rac::mth
 {
+    class Vector2I16;
+    typedef const Vector2I16 v2i16;    typedef Vector2I16 mut_v2i16;
+    typedef const Vector2I16* v2i16_ptr;   typedef const Vector2I16& v2i16_ref;
+    typedef Vector2I16* mut_v2i16_ptr; typedef Vector2I16& mut_v2i16_ref;
+
+    class Vector2I32;
+    typedef const Vector2I32 v2i;    typedef Vector2I32 mut_v2i;
+    typedef const Vector2I32* v2i_ptr;   typedef const Vector2I32& v2i_ref;
+    typedef Vector2I32* mut_v2i_ptr; typedef Vector2I32& mut_v2i_ref;
+
+    class Vector2I16
+    {
+    public:
+        mut_i16 x = 0;
+        mut_i16 y = 0;
+
+        Vector2I16() {}
+        Vector2I16(i16 a) { x = a; y = a; }
+        Vector2I16(i16 _x, i16 _y) { x = _x; y = _y; }
+
+        INLINE v2i16_ref operator=(v2i16_ref rhs)
+        {
+            x = rhs.x;
+            y = rhs.y;
+            return *this;
+        }
+        INLINE v2i16 operator -() const { return v2i16(-x, -y); }
+        INLINE v2i16 operator *(i16 v) { return v2i16(x * v, y * v); }
+        INLINE v2i16 operator /(i16 v)
+        {
+            return v2i16(x / v, y / v);
+        }
+        INLINE v2i16_ref operator +=(v2i16_ref rhs)
+        {
+            x += rhs.x;
+            y += rhs.y;
+        }
+        INLINE v2i16_ref operator -=(v2i16_ref rhs)
+        {
+            x -= rhs.x;
+            y -= rhs.y;
+        }
+        INLINE v2i16_ref operator *=(v2i16_ref rhs)
+        {
+            x *= rhs.x;
+            y *= rhs.y;
+        }
+        INLINE v2i16_ref operator *=(i16 a)
+        {
+            x *= a;
+            y *= a;
+        }
+        INLINE v2i16_ref operator /=(v2i16_ref rhs)
+        {
+            x /= rhs.x;
+            y /= rhs.y;
+        }
+        INLINE v2i16_ref operator /=(i16 a)
+        {
+            x /= a;
+            y /= a;
+        }
+    };
+
+    class Vector2I32
+    {
+    public:
+        mut_i32 x = 0;
+        mut_i32 y = 0;
+
+        Vector2I32() {}
+        Vector2I32(i32 a) { x = a; y = a; }
+        Vector2I32(i32 _x, i32 _y) { x = _x; y = _y; }
+
+        INLINE v2i_ref operator=(v2i_ref rhs)
+        {
+            x = rhs.x;
+            y = rhs.y;
+            return *this;
+        }
+        INLINE v2i operator -() const { return v2i(-x, -y); }
+        INLINE v2i operator *(i32 v) { return v2i(x * v, y * v); }
+        INLINE v2i operator /(i32 v)
+        {
+            return v2i(x / v, y / v);
+        }
+        INLINE v2i_ref operator +=(v2i_ref rhs)
+        {
+            x += rhs.x;
+            y += rhs.y;
+        }
+        INLINE v2i_ref operator -=(v2i_ref rhs)
+        {
+            x -= rhs.x;
+            y -= rhs.y;
+        }
+        INLINE v2i_ref operator *=(v2i_ref rhs)
+        {
+            x *= rhs.x;
+            y *= rhs.y;
+        }
+        INLINE v2i_ref operator *=(i32 a)
+        {
+            x *= a;
+            y *= a;
+        }
+        INLINE v2i_ref operator /=(v2i_ref rhs)
+        {
+            x /= rhs.x;
+            y /= rhs.y;
+        }
+        INLINE v2i_ref operator /=(i32 a)
+        {
+            x /= a;
+            y /= a;
+        }
+    };
+
     class Vector2;
     typedef const Vector2 v2;    typedef Vector2 mut_v2;
     typedef const Vector2* v2_ptr;   typedef const Vector2& v2_ref;
@@ -110,6 +234,7 @@ namespace rac::mth
         {
             x = rhs.x;
             y = rhs.y;
+            return *this;
         }
         INLINE v2 operator -() const { return v2(-x, -y); }
         INLINE v2 operator *(f32 v) { return v2(x * v, y * v); }
@@ -345,7 +470,6 @@ namespace rac::mth
         mut_f32 z = 0.0f;
 
         Vector3() { }
-
         Vector3(i8 _x, i8 _y, i8 _z)
         {
             x = (mut_f32)_x;
@@ -419,6 +543,7 @@ namespace rac::mth
             x = rhs.x;
             y = rhs.y;
             z = rhs.z;
+            return *this;
         }
         INLINE v3 operator -() const { return v3(-x, -y, -z); }
         INLINE v3 operator *(f32 v) { return v3(x * v, y * v, z * v); }

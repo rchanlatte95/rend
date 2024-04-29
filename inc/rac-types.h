@@ -69,11 +69,14 @@ typedef const uint64_t* u64ptr; typedef uint64_t* mut_u64ptr;
 typedef const float* f32ptr;  typedef int32_t* mut_f32ptr;
 typedef const double* f64ptr; typedef uint32_t* mut_f64ptr;
 
-#ifndef RAC_OPENGL_TYPES
-#define RAC_OPENGL_TYPES
+#ifndef RAC_SDL_OPENGL_TYPES
+#define RAC_SDL_OPENGL_TYPES
 
 typedef const SDL_Window SdlWin; typedef SDL_Window mut_SdlWin;
 typedef const SDL_Window* SdlWin_ptr; typedef SDL_Window* mut_SdlWin_ptr;
+
+typedef const SDL_GLContext SdlGlContext; typedef SDL_GLContext mut_SdlGlContext;
+typedef const SDL_GLContext* SdlGlContext_ptr; typedef SDL_GLContext* mut_SdlGlContext_ptr;
 
 typedef const SDL_Event SdlEvent; typedef SDL_Event mut_SdlEvent;
 typedef const SDL_Event* SdlEvent_ptr; typedef SDL_Event mut_SdlEvent_ptr;

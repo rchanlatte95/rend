@@ -2,16 +2,15 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <SDL.h>
 
-#include <glad.h>
 #include <SDL.h>
+#include <glad.h>
 #include <khrplatform.h>
 
-#include "rac-types.h"
-#include "rac-logic.h"
-#include "rac-mth.h"
-#include "rac-gl.h"
+#include "inc/rac-types.h"
+#include "inc/rac-logic.h"
+#include "inc/rac-mth.h"
+#include "inc/rac-gl.h"
 
 #ifdef NDEBUG
 #define RELEASE true
@@ -32,9 +31,7 @@ f64 MS_PER_FRAME = 1.0 / MAX_FPS;
 f64 MAX_DT = 1.0 / 60.0;
 
 mut_screen SystemScreen;
-mut_screen CurrentScreen;
-static mut_SdlWin_ptr window = nullptr;
-static SDL_GLContext maincontext;
+mut_Win MainWin;
 
 static mut_SdlEvent event;
 
@@ -58,6 +55,7 @@ cstr vertShdrSrc =	"#version 450 core\n"
 					"}\0";
 cstr fragShdrSrc =	"#version 450 core\n"
 					"out vec4 FragColor; \n"
+					"uniform float time;\n"
 					"void main()\n"
 					"{\n"
 					"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
@@ -67,72 +65,6 @@ static void sdl_die(cstr message)
 {
 	fprintf(stderr, "%s: %s\n", message, SDL_GetError());
 	exit(2);
-}
-
-static void init_screen(cstr caption)
-{
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		sdl_die("Couldn't initialize SDL");
-
-	atexit(SDL_Quit);
-	SDL_GL_LoadLibrary(nullptr); // Default OpenGL is fine.
-
-	// Request an OpenGL 4.5 context (should be core)
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	// Also request a depth buffer
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-	SystemScreen.InitSystemInfo();
-	CurrentScreen = SystemScreen * 0.5f;
-
-#if RELEASE
-
-	window = rac::gl::CreateCenteredWindow(caption, CurrentScreen);
-
-#elif DEBUG
-
-	str dbgCaption = "DEBUG ";
-	dbgCaption += caption;
-	window = rac::gl::CreateCenteredWindow(dbgCaption.ToCstr(), CurrentScreen);
-	dbgCaption.Clear();
-
-#endif
-
-	if (window == nullptr) sdl_die("Couldn't set video mode");
-
-	maincontext = SDL_GL_CreateContext(window);
-	if (maincontext == nullptr) sdl_die("Failed to create OpenGL context");
-
-	// Check OpenGL properties
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
-	printf("Vendor:   %s\n", glGetString(GL_VENDOR));
-	printf("Renderer: %s\n", glGetString(GL_RENDERER));
-	printf("Version:  %s\n", glGetString(GL_VERSION));
-
-	// Disable depth test and face culling.
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-	CurrentScreen.SetGlViewport();
-}
-
-static void GetFrequency()
-{
-	LARGE_INTEGER li;
-	if (!QueryPerformanceFrequency(&li))
-		sdl_die("QueryPerformanceFrequency failed!\n");
-
-	PC_FREQ = f64(li.QuadPart) / TIMER_RESOLUTION;
-	INV_PC_FREQ = 1.0 / PC_FREQ;
-}
-
-static f64 GetCounter()
-{
-	LARGE_INTEGER li;
-	QueryPerformanceCounter(&li);
-	return f64(li.QuadPart) * INV_PC_FREQ;
 }
 
 static i32 CompileShader()
@@ -180,10 +112,11 @@ static i32 CompileShader()
 		log.Clear();
 		return GL_FAILED;
 	}
+	i32 test = glGetUniformLocation(shaderProgram, "time");
+	printf("%d", test);
 
 	glDeleteShader(vertShader);
 	glDeleteShader(fragShader);
-
 	return GL_SUCCESS;
 }
 
@@ -206,6 +139,74 @@ static void InitRenderer()
 	glBindVertexArray(0);
 }
 
+static void MainInit()
+{
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		sdl_die("Couldn't initialize SDL");
+
+	atexit(SDL_Quit);
+	SDL_GL_LoadLibrary(nullptr); // Default OpenGL is fine.
+
+	// Request an OpenGL 4.5 context (should be core)
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	// Also request a depth buffer
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+	SystemScreen.InitSystemInfo();
+	WindowInitResult res;
+
+	str mainWindowTitle = "Main Window";
+#if RELEASE
+	res = MainWin.CreateCentered(mainWindowTitle, SystemScreen.SizeToV2I(0.5f));
+#elif DEBUG
+	res = MainWin.CreateCentered("DEBUG " + mainWindowTitle, SystemScreen.SizeToV2I(0.5f));
+#endif
+
+	if (res != Succeeded)
+	{
+		switch (res)
+		{
+		case WindowCreateFailed: sdl_die("Couldn't create SDL Window.");
+		case ContextCreateFailed: sdl_die("Couldn't set video mode.");
+		default: sdl_die("Unknown error occured in creating and setting SDL window.");
+		}
+	}
+
+#if DEBUG
+	gladLoadGLLoader(SDL_GL_GetProcAddress); // Check OpenGL properties
+	printf("Vendor:   %s\n", glGetString(GL_VENDOR));
+	printf("Renderer: %s\n", glGetString(GL_RENDERER));
+	printf("Version:  %s\n", glGetString(GL_VERSION));
+#endif
+
+	// Disable depth test and face culling.
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	MainWin.SetViewport();
+
+	InitRenderer();
+}
+
+static void GetFrequency()
+{
+	LARGE_INTEGER li;
+	if (!QueryPerformanceFrequency(&li))
+		sdl_die("QueryPerformanceFrequency failed!\n");
+
+	PC_FREQ = f64(li.QuadPart) / TIMER_RESOLUTION;
+	INV_PC_FREQ = 1.0 / PC_FREQ;
+}
+
+static f64 GetCounter()
+{
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
+	return f64(li.QuadPart) * INV_PC_FREQ;
+}
+
 static void Render()
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -215,7 +216,7 @@ static void Render()
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	SDL_GL_SwapWindow(window);
+	MainWin.Swap();
 }
 
 static i32 PollInput()
@@ -266,8 +267,7 @@ int main(int argc, char* argv[])
 	(void)argc; argv = NULL;
 
 	GetFrequency();
-	init_screen("Ryan's Renderer");
-	InitRenderer();
+	MainInit();
 
 	// NOTE(RYAN_2024-04-27):	I have no physics simulations running so I don't
 	//							anticipate any need for more sophisticated time
