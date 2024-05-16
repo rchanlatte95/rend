@@ -5,14 +5,14 @@
 
 namespace rac::io
 {
-    static INLINE int Print(string::str_ref s)
+    static INLINE int Print(string::Str_ref s)
     {
         u8ptr head = s.PtrToChars();
         mut_i32 len = s.Length();
         while (--len) { _fputchar(*head++); }
         return s.Length();
     }
-    static INLINE int Println(string::str_ref s)
+    static INLINE int Println(string::Str_ref s)
     {
         u8ptr head = s.PtrToChars();
         mut_i32 len = s.Length();

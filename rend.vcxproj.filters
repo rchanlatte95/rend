@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{e4478634-6404-400c-88e2-85698333c686}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rend.cpp">
@@ -23,26 +26,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rac-mth.h">
+    <ClInclude Include="inc\rac-gl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-types.h">
+    <ClInclude Include="inc\rac-io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-str.h">
+    <ClInclude Include="inc\rac-logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-logic.h">
+    <ClInclude Include="inc\rac-mth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-io.h">
+    <ClInclude Include="inc\rac-shdr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-gl.h">
+    <ClInclude Include="inc\rac-str.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-shdr.h">
+    <ClInclude Include="inc\rac-types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hello-tri.glsl" />
   </ItemGroup>
 </Project>

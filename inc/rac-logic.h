@@ -4,7 +4,8 @@
 
 namespace logic
 {
-    class Bool;
+    class Boolean;
+    typedef const Boolean Bool;     typedef Boolean mut_Bool;
     typedef const Bool* Bool_ptr;   typedef Bool* mut_Bool_ptr;
     typedef const Bool& Bool_ref;   typedef Bool& mut_Bool_ref;
 
@@ -27,26 +28,26 @@ namespace logic
     typedef const v3bool* v3bool_ptr;   typedef const v3bool& v3bool_ref;
     typedef v3bool* mut_v3bool_ptr; typedef v3bool& mut_v3bool_ref;
 
-    class Bool
+    class Boolean
     {
     private:
         mut_Int8 value = 0;
 
     public:
-        Bool() { value = 0; }
-        Bool(bool b) { value = b ? 1 : 0; }
+        Boolean() { value = 0; }
+        Boolean(bool b) { value = b ? 1 : 0; }
 
-        Bool(i8 i) { value = i != 0 ? 1 : 0; }
-        Bool(u8 u) { value = u != 0 ? 1 : 0; }
+        Boolean(i8 i) { value = i != 0 ? 1 : 0; }
+        Boolean(u8 u) { value = u != 0 ? 1 : 0; }
 
-        Bool(i16 i) { value = i != 0 ? 1 : 0; }
-        Bool(u16 u) { value = u != 0 ? 1 : 0; }
+        Boolean(i16 i) { value = i != 0 ? 1 : 0; }
+        Boolean(u16 u) { value = u != 0 ? 1 : 0; }
 
-        Bool(i32 i) { value = i != 0 ? 1 : 0; }
-        Bool(u32 u) { value = u != 0 ? 1 : 0; }
+        Boolean(i32 i) { value = i != 0 ? 1 : 0; }
+        Boolean(u32 u) { value = u != 0 ? 1 : 0; }
 
-        Bool(i64 i) { value = i != 0 ? 1 : 0; }
-        Bool(u64 u) { value = u != 0 ? 1 : 0; }
+        Boolean(i64 i) { value = i != 0 ? 1 : 0; }
+        Boolean(u64 u) { value = u != 0 ? 1 : 0; }
 
         operator bool() const { return value != 0; }
 
