@@ -278,7 +278,7 @@ namespace rac::mth
         INLINE ptr Ptr() const { return (ptr)(&x); }
         INLINE v2_ref Ref() const { return *this; }
 
-        INLINE string::Str_ref ToStr(string::mut_Str_ref str) const
+        INLINE string::StrRef ToStr(string::mut_StrRef str) const
         {
             char buff[V2_STRING_MAX] = { 0 };
             sprintf_s(buff, V2_STRING_LEN, "(%0.3f, %0.3f)", x, y);
@@ -593,7 +593,7 @@ namespace rac::mth
         INLINE ptr Ptr() const { return (ptr)(&x); }
         INLINE v3_ref Ref() const { return *this; }
 
-        INLINE string::Str_ref ToStr(string::mut_Str_ref str) const
+        INLINE string::StrRef ToStr(string::mut_StrRef str) const
         {
             char buff[V3_STRING_MAX] = { 0 };
             sprintf_s(buff, V3_STRING_LEN, "(%0.3f, %0.3f, %0.3f)", x, y, z);

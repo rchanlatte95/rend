@@ -1,8 +1,7 @@
 #pragma once
-
 #include "rac-types.h"
 
-namespace logic
+namespace rac::logic
 {
     class Boolean;
     typedef const Boolean Bool;     typedef Boolean mut_Bool;
