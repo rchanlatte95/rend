@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-
 #include <gl/GL.h>
 #pragma warning(pop)
 
@@ -19,10 +18,10 @@
 #define INLINE __forceinline
 #define NO_INLINE __declspec(noinline)
 
-typedef void* mut_ptr;      typedef const void* ptr;
+typedef const void* ptr;	typedef void* mut_ptr;
 
-typedef const char* cstr;   typedef char* mut_cstr;
-typedef const char** cstrptr;   typedef char** mut_cstrptr;
+typedef const char* cstr;		typedef char* mut_cstr;
+typedef const char** cstrptr;	typedef char** mut_cstrptr;
 
 typedef const int8_t i8;    typedef const uint8_t u8;
 typedef int8_t mut_i8;      typedef uint8_t mut_u8;

@@ -12,6 +12,7 @@
 #include "inc/rac-mth.h"
 #include "inc/rac-gl.h"
 #include "inc/rac-stack.h"
+#include "inc/rac-queue.h"
 
 #ifdef NDEBUG
 #define RELEASE true
@@ -83,7 +84,7 @@ static i32 CompileShader()
 	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &compileResult);
 	if (compileResult == GL_FAILED)
 	{
-		glGetShaderInfoLog(vertShader, log.MaxLength(), NULL, logCharPtr);
+		glGetShaderInfoLog(vertShader, log.Capacity(), NULL, logCharPtr);
 		printf(log.ToCstr());
 		log.Clear();
 		return GL_FAILED;
@@ -96,7 +97,7 @@ static i32 CompileShader()
 	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compileResult);
 	if (compileResult == GL_FAILED)
 	{
-		glGetShaderInfoLog(vertShader, log.MaxLength(), NULL, logCharPtr);
+		glGetShaderInfoLog(vertShader, log.Capacity(), NULL, logCharPtr);
 		printf(log.ToCstr());
 		log.Clear();
 		return GL_FAILED;
@@ -110,7 +111,7 @@ static i32 CompileShader()
 
 	if (compileResult == GL_FAILED)
 	{
-		glGetShaderInfoLog(shaderProgram, log.MaxLength(), NULL, logCharPtr);
+		glGetShaderInfoLog(shaderProgram, log.Capacity(), NULL, logCharPtr);
 		printf(log.ToCstr());
 		log.Clear();
 		return GL_FAILED;
@@ -268,15 +269,10 @@ int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
 
-	StaticStack<int> test;
-	test.Push(101);
-	test.Push(202);
-	test.Push(303);
-	std::cout << test.Peek(0) << std::endl;
-	std::cout << test.Peek(1) << std::endl;
-	std::cout << test.Peek(2) << std::endl;
-	std::cout << test.Peek(500) << std::endl;
-	std::cout << test.Peek(-1) << std::endl;
+	StaticQueue<int> test;
+
+	for (unsigned int i = 0; i < test.Len(); ++i)
+		std::cout << test.Peek(i) << std::endl;
 
 	/*
 	GetFrequency();

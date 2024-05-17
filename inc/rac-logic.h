@@ -58,7 +58,6 @@ namespace rac::logic
             value = rhs ? 1 : 0;
             return *this;
         }
-
         INLINE Bool_ref operator=(ptr rhs)
         {
             value = rhs != nullptr ? 1 : 0;
