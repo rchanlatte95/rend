@@ -271,8 +271,8 @@ int main(int argc, char* argv[])
 
 	StaticQueue<int> test;
 
-	for (unsigned int i = 0; i < test.Len(); ++i)
-		std::cout << test.Peek(i) << std::endl;
+	for (unsigned int i = 0; i < test.Count(); ++i)
+		std::cout << test[i] << std::endl;
 
 	/*
 	GetFrequency();
