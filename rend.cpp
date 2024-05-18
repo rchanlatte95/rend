@@ -271,8 +271,8 @@ int main(int argc, char* argv[])
 
 	StaticQueue<int> test;
 
-	for (unsigned int i = 0; i < test.Count(); ++i)
-		std::cout << test[i] << std::endl;
+	for (unsigned int i = 0, ct = test.Count(); i < ct; ++i)
+		std::cout << test.Dequeue() << std::endl;
 
 	/*
 	GetFrequency();
@@ -305,5 +305,5 @@ int main(int argc, char* argv[])
 		Render();
 	}
 	*/
-	return 0;
+	return EXIT_SUCCESS;
 }
