@@ -6,57 +6,56 @@ namespace rac::static_collections
 {
 	using namespace rac::logic;
 
-	inline constexpr u32 STACK_TARGET_BYTE_SIZE = 128;
-	inline constexpr u32 STACK_CAPACITY = STACK_TARGET_BYTE_SIZE - sizeof(u32);
-	inline constexpr u32 STACK_MAX_INDEX = STACK_CAPACITY - 1;
+	inline constexpr i32 STACK_TARGET_BYTE_SIZE = 128;
+	inline constexpr i32 STACK_CAPACITY = STACK_TARGET_BYTE_SIZE - sizeof(i32);
+	inline constexpr i32 STACK_MAX_INDEX = STACK_CAPACITY - 1;
 	template <class T> class StaticStack
 	{
 	private:
 
-		mut_u32 len = 0;
+		mut_i32 len = 0;
 		T data[STACK_CAPACITY];
 
 	public:
 
 		StaticStack() { }
 
-		INLINE static constexpr u32 ClampToBounds(u32 x)
+		INLINE static constexpr i32 ClampToBounds(i32 x)
 		{
 			return x > STACK_MAX_INDEX ? STACK_MAX_INDEX : x;
 		}
 
-		INLINE u32 PenultLen() const noexcept
+		INLINE i32 PenultLen() const noexcept
 		{
-			u32 l = len - 1u;
+			i32 l = len - 1u;
 			return l > len ? 0u : l;
 		}
-		INLINE u32 Len() const noexcept { return len; }
-		INLINE u32 Capacity() const noexcept { return STACK_CAPACITY; }
+		INLINE i32 Len() const noexcept { return len; }
+		INLINE i32 Capacity() const noexcept { return STACK_CAPACITY; }
 
 		INLINE const T* Ptr() const noexcept { return data; }
-		INLINE u32 Remaining() const noexcept { return STACK_CAPACITY - len; }
+		INLINE i32 Remaining() const noexcept { return STACK_CAPACITY - len; }
 
-		INLINE Bool Full() const noexcept { return STACK_CAPACITY == len; }
-		INLINE Bool Empty() const noexcept { return len == 0u; }
-		INLINE Bool Any() const noexcept { return len > 0u; }
+		INLINE Bool Full() const noexcept { return len > STACK_MAX_INDEX; }
+		INLINE Bool Empty() const noexcept { return len == 0; }
+		INLINE Bool Any() const noexcept { return len > 0; }
 
 		MAY_INLINE void Push(T v)
 		{
-			if (len == STACK_CAPACITY) return;
+			if (len > STACK_MAX_INDEX) return;
 			data[len++] = v;
 		}
 		MAY_INLINE const T Pop()
 		{
-			if (len == 0) return static_cast<T>(NULL);
-			return data[--len];
+			return len < 1 ? static_cast<T>(NULL) : data[--len];
 		}
 		MAY_INLINE const T Peek()
 		{
-			return len != 0 ? data[len - 1] : static_cast<T>(NULL);
+			return len > 0 ? data[len - 1] : static_cast<T>(NULL);
 		}
-		MAY_INLINE const T Peek(u32 index) const noexcept
+		MAY_INLINE const T Peek(i32 index) const noexcept
 		{
-			if (len == 0) return static_cast<T>(NULL);
+			if (len < 1) return static_cast<T>(NULL);
 
 			u32 dec_len = len - 1;
 			return index > STACK_MAX_INDEX ? data[dec_len] : data[dec_len - index];

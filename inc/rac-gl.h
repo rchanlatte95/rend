@@ -120,9 +120,9 @@ namespace rac::gl
 		INLINE void Swap() const { SDL_GL_SwapWindow(Main); }
 
 		// NOTE(RYAN_2024-04-26): Note, OPENGL is ASSUMED in this OPENGL library.
-		MAY_INLINE WindowInitResult CreateCentered(StrRef winTitle, v2i_ref winSize)
+		MAY_INLINE WindowInitResult CreateCentered(SmallStrRef winTitle, v2i_ref winSize)
 		{
-			Main = SDL_CreateWindow(winTitle.ToCstr(),
+			Main = SDL_CreateWindow(	winTitle.ToCstr(),
 									SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 									winSize.x, winSize.y, GetFlags());
 			if (Main == nullptr)

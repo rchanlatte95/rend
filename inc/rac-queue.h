@@ -6,49 +6,48 @@ namespace rac::static_collections
 {
 	using namespace rac::logic;
 
-	inline constexpr u32 QUEUE_TARGET_BYTE_SIZE = 128;
-	inline constexpr u32 QUEUE_CAPACITY = QUEUE_TARGET_BYTE_SIZE - (sizeof(u32) * 3);
-	inline constexpr u32 QUEUE_MAX_INDEX = QUEUE_CAPACITY - 1;
+	inline constexpr i32 QUEUE_TARGET_BYTE_SIZE = 128;
+	inline constexpr i32 QUEUE_CAPACITY = QUEUE_TARGET_BYTE_SIZE - (sizeof(i32) * 3);
+	inline constexpr i32 QUEUE_MAX_INDEX = QUEUE_CAPACITY - 1;
 	template <class T> class StaticQueue
 	{
 	private:
 
-		mut_u32 count = 0;
-		mut_u32 front_index = 0;
-		mut_u32 back_index = 0;
+		mut_i32 count = 0;
+		mut_i32 front_index = 0;
+		mut_i32 back_index = 0;
 		T data[QUEUE_CAPACITY];
 
 	public:
 
 		StaticQueue() { }
 
-		INLINE u32 PenultCount() const noexcept
+		INLINE i32 PenultCount() const noexcept
 		{
-			u32 dec_ct = count - 1u;
-			return dec_ct > count ? 0u : dec_ct;
+			i32 dec_ct = count - 1;
+			return dec_ct > count ? 0 : dec_ct;
 		}
-		INLINE u32 Count() const noexcept { return count; }
-		INLINE u32 Capacity() const noexcept { return QUEUE_CAPACITY; }
+		INLINE i32 Count() const noexcept { return count; }
+		INLINE i32 Capacity() const noexcept { return QUEUE_CAPACITY; }
 
 		INLINE const T* Ptr() const noexcept { return data; }
-		INLINE u32 Remaining() const noexcept { return QUEUE_CAPACITY - count; }
+		INLINE i32 Remaining() const noexcept { return QUEUE_CAPACITY - count; }
 
-		INLINE Bool Full() const noexcept { return QUEUE_CAPACITY == count; }
-		INLINE Bool Empty() const noexcept { return count == 0u; }
-		INLINE Bool Any() const noexcept { return count > 0u; }
+		INLINE Bool Full() const noexcept { return QUEUE_CAPACITY >= count; }
+		INLINE Bool Empty() const noexcept { return count <= 0; }
+		INLINE Bool Any() const noexcept { return count > 0; }
 
 		MAY_INLINE void Enqueue(T v)
 		{
 			if (count > QUEUE_MAX_INDEX) return;
-
 			++count;
+
 			data[front_index] = v;
 			front_index = (front_index + 1) % QUEUE_CAPACITY;
 		}
 		MAY_INLINE const T Dequeue()
 		{
 			if (count < 1) return static_cast<T>(NULL);
-
 			--count;
 
 			u32 idx = back_index;

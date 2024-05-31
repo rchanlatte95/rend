@@ -1,6 +1,7 @@
 #pragma warning(push, 0)
 
 #include <windows.h>
+#include <vector>
 #include <stdio.h>
 
 #include <SDL.h>
@@ -65,10 +66,11 @@ cstr fragShdrSrc =	"#version 450 core\n"
 					"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 					"}\0";
 
-static void sdl_die(cstr message)
+static void AbortSDL(StaticStr abortMsg)
 {
-	fprintf(stderr, "%s: %s\n", message, SDL_GetError());
-	exit(2);
+	fprintf(stderr, "%s: %s\n", abortMsg.ToCstr(), SDL_GetError());
+
+	exit(EXIT_FAILURE);
 }
 
 static i32 CompileShader()
@@ -128,7 +130,7 @@ static void InitRenderer()
 {
 	i32 shaderResult = CompileShader();
 	if (shaderResult == GL_FAILED)
-		sdl_die("\r\nFailed to compile shaders.");
+		AbortSDL("\r\nFailed to compile shaders.");
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -146,7 +148,7 @@ static void InitRenderer()
 static void MainInit()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		sdl_die("Couldn't initialize SDL");
+		AbortSDL("Couldn't initialize SDL");
 
 	atexit(SDL_Quit);
 	SDL_GL_LoadLibrary(nullptr); // Default OpenGL is fine.
@@ -162,7 +164,7 @@ static void MainInit()
 	SystemScreen.InitSystemInfo();
 	WindowInitResult res;
 
-	Str mainWindowTitle = "Main Window";
+	SmallStr mainWindowTitle = "Rend";
 #if RELEASE
 	res = MainWin.CreateCentered(mainWindowTitle, SystemScreen.SizeToV2I(0.5f));
 #elif DEBUG
@@ -173,9 +175,9 @@ static void MainInit()
 	{
 		switch (res)
 		{
-		case WindowCreateFailed: sdl_die("Couldn't create SDL Window.");
-		case ContextCreateFailed: sdl_die("Couldn't set video mode.");
-		default: sdl_die("Unknown error occured in creating and setting SDL window.");
+		case WindowCreateFailed: AbortSDL("Couldn't create SDL Window.");
+		case ContextCreateFailed: AbortSDL("Couldn't set video mode.");
+		default: AbortSDL("Unknown error occured in creating and setting SDL window.");
 		}
 	}
 
@@ -198,7 +200,7 @@ static void GetFrequency()
 {
 	LARGE_INTEGER li;
 	if (!QueryPerformanceFrequency(&li))
-		sdl_die("QueryPerformanceFrequency failed!\n");
+		AbortSDL("QueryPerformanceFrequency failed!\n");
 
 	PC_FREQ = f64(li.QuadPart) / TIMER_RESOLUTION;
 	INV_PC_FREQ = 1.0 / PC_FREQ;
@@ -265,14 +267,84 @@ static i32 PollInput()
 	return 1;
 }
 
+static const unsigned char BitsSetTable256[256] =
+{
+#   define B2(n) n,     n+1,     n+1,     n+2
+#   define B4(n) B2(n), B2(n+1), B2(n+1), B2(n+2)
+#   define B6(n) B4(n), B4(n+1), B4(n+1), B4(n+2)
+	B6(0), B6(1), B6(1), B6(2)
+};
+
+static inline constexpr i32 PopCt(mut_u32 v)
+{
+	return	BitsSetTable256[v & 0xff] +
+			BitsSetTable256[(v >> 8) & 0xff] +
+			BitsSetTable256[(v >> 16) & 0xff] +
+			BitsSetTable256[v >> 24];
+}
+
+using namespace std;
+
+static inline constexpr int Bsr(unsigned int k)
+{
+	int i = -1;
+	for (; k; k >>= 1, ++i) {}
+	return i;
+}
+
+static const int DeBruijnBitPos[32] =
+{
+  0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+  31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+};
+static inline constexpr int BsrDB(unsigned int v)
+{
+#pragma warning( disable : 4146) // Unsigned negation
+	return DeBruijnBitPos[((u32)((v & -v) * 0x077CB531U)) >> 27];
+#pragma warning( default : 4146)
+}
+
+static inline vector<int> ConstructSubset(const vector<int>& nums, int subsetIndex)
+{
+	const int subsetSz = PopCt(subsetIndex);
+	vector<int> currSubset(subsetSz);
+
+	for (int i = 0; i < subsetSz; subsetIndex >>= 1, ++i)
+	{
+		i32 idx = BsrDB(subsetIndex);
+		currSubset[i] = nums[idx];
+	}
+
+	return currSubset;
+}
+
+class Solution
+{
+public:
+	const vector<int> EMPTY_INT_VEC = vector<int>{};
+
+	vector<vector<int>> subsets(vector<int>& nums)
+	{
+		const int ct = (int)nums.size();
+		const int subsetCt = 1 << ct;
+		vector<vector<int>> res(subsetCt);
+
+		int currSubsetIdx = 0;
+		res[currSubsetIdx++] = EMPTY_INT_VEC;
+		for (; currSubsetIdx < subsetCt; ++currSubsetIdx)
+			res[currSubsetIdx] = ConstructSubset(nums, currSubsetIdx);
+
+		return res;
+	}
+};
+
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
 
-	StaticQueue<int> test;
-
-	for (unsigned int i = 0; i < test.Count(); ++i)
-		std::cout << test[i] << std::endl;
+	Solution s;
+	vector<int> test = { 1,2,3 };
+	vector<vector<int>> res = s.subsets(test);
 
 	/*
 	GetFrequency();
@@ -305,5 +377,5 @@ int main(int argc, char* argv[])
 		Render();
 	}
 	*/
-	return 0;
+	return EXIT_SUCCESS;
 }

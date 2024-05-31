@@ -6,20 +6,20 @@ namespace rac::string
 {
     #define RAC_DIGIT_TO_CHAR(x) (x + 48)
 
-    i32 STATIC_STR_TARGET_BYTE_SIZE = 512;
-    i32 STATIC_STR_CAPACITY = STATIC_STR_TARGET_BYTE_SIZE - sizeof(i32);
-    i32 STATIC_STR_MAX_INDEX = STATIC_STR_CAPACITY - 1;
-    i32 STATIC_STR_PENULT_INDEX = STATIC_STR_MAX_INDEX - 1;
+    inline static constexpr i32 STATIC_STR_TARGET_BYTE_SIZE = 512;
+    inline static constexpr i32 STATIC_STR_CAPACITY = STATIC_STR_TARGET_BYTE_SIZE - sizeof(i32) - sizeof(u8);
+    inline static constexpr i32 STATIC_STR_MAX_INDEX = STATIC_STR_CAPACITY - 1;
 
     // https://en.wikipedia.org/wiki/Whitespace_character
-    u8 CHAR_TAB = 0x09;
-    u8 LINE_FEED = 0x0A;
-    u8 LINE_TAB = 0x0B;
-    u8 FORM_FEED = 0x0C;
-    u8 CARRIAGE_RETURN = 0x0D;
-    u8 SPACE = 0x20;
-    u8 NEXT_LINE = 0x85;
-    u8 NO_BREAK_SPACE = 0xA0;
+    inline static constexpr u8 NULL_TERM = '\0';
+    inline static constexpr u8 CHAR_TAB = 0x09;
+    inline static constexpr u8 LINE_FEED = 0x0A;
+    inline static constexpr u8 LINE_TAB = 0x0B;
+    inline static constexpr u8 FORM_FEED = 0x0C;
+    inline static constexpr u8 CARRIAGE_RETURN = 0x0D;
+    inline static constexpr u8 SPACE = 0x20;
+    inline static constexpr u8 NEXT_LINE = 0x85;
+    inline static constexpr u8 NO_BREAK_SPACE = 0xA0;
     inline static constexpr bool whitespace(u8 c)
     {
         return  c == SPACE ||
@@ -42,6 +42,7 @@ namespace rac::string
     private:
         mut_i32 len = 0;
         mut_u8 chars[STATIC_STR_CAPACITY];
+        u8 NULL_TERMINATOR = NULL_TERM;
 
     public:
         INLINE static constexpr i32 ClampToBounds(i32 x)
@@ -54,13 +55,13 @@ namespace rac::string
         StaticStr(cstr _str)
         {
             len = (i32)strnlen_s(_str, STATIC_STR_CAPACITY);
-            memcpy_s(chars, STATIC_STR_PENULT_INDEX, _str, len);
+            memcpy_s(chars, STATIC_STR_CAPACITY, _str, len);
         }
         StaticStr(cstr _str, u32 char_ct, u32 startIndex = 0)
         {
             i32 ct = char_ct > STATIC_STR_CAPACITY ? STATIC_STR_CAPACITY : char_ct;
             len = (i32)strnlen_s(_str + startIndex, ct);
-            memcpy_s(chars, STATIC_STR_PENULT_INDEX, _str, len);
+            memcpy_s(chars, STATIC_STR_CAPACITY, _str, len);
         }
         StaticStr(StrRef _str)
         {
@@ -286,10 +287,9 @@ namespace rac::string
         return res;
     }
 
-    i8 SMALL_STATIC_STR_TARGET_BYTE_SIZE = 16; // must be power of two
-    i8 SMALL_STATIC_STR_CAPACITY = SMALL_STATIC_STR_TARGET_BYTE_SIZE - 1;
-    i8 SMALL_STATIC_STR_MAX_INDEX = SMALL_STATIC_STR_CAPACITY - 1;
-    static i8 ZERO = 0;
+    inline static constexpr i8 SMALL_STATIC_STR_TARGET_BYTE_SIZE = 16; // must be power of two
+    inline static constexpr i8 SMALL_STATIC_STR_CAPACITY = SMALL_STATIC_STR_TARGET_BYTE_SIZE - (sizeof(u8) * 2);
+    inline static constexpr i8 SMALL_STATIC_STR_MAX_INDEX = SMALL_STATIC_STR_CAPACITY - 1;
     class SmallStaticStr;
     typedef const SmallStaticStr SmallStr;      typedef SmallStaticStr mut_SmallStr;
     typedef const SmallStaticStr* SmallStrPtr; typedef SmallStaticStr* mut_SmallStrPtr;
@@ -300,6 +300,7 @@ namespace rac::string
     private:
         mut_u8 len = 0;
         mut_u8 chars[SMALL_STATIC_STR_CAPACITY];
+        u8 NULL_TERMINATOR = NULL_TERM;
 
     public:
         INLINE static constexpr u8 ClampToBounds(u8 x)
@@ -308,38 +309,39 @@ namespace rac::string
         }
 
         SmallStaticStr() { }
-        SmallStaticStr(cstr _str)
+        SmallStaticStr(cstr c_str)
         {
-            len = (u8)strnlen_s(_str, SMALL_STATIC_STR_CAPACITY);
-            memcpy_s(chars, SMALL_STATIC_STR_CAPACITY, _str, len);
+            len = (u8)strnlen_s(c_str, SMALL_STATIC_STR_CAPACITY);
+            memcpy_s(chars, SMALL_STATIC_STR_CAPACITY, c_str, len);
+            chars[len] = 0;
         }
-        SmallStaticStr(cstr _str, u8 char_ct, u8 startIndex = 0)
+        SmallStaticStr(cstr c_str, u8 char_ct, u8 startIndex = 0)
         {
             u8 start = ClampToBounds(startIndex);
-            len = (u8)strnlen_s(&_str[start], ClampToBounds(char_ct));
-            memcpy_s(chars, SMALL_STATIC_STR_CAPACITY, _str, len);
+            len = (u8)strnlen_s(&c_str[start], ClampToBounds(char_ct));
+            memcpy_s(chars, SMALL_STATIC_STR_CAPACITY, c_str, len);
+            chars[len] = 0;
         }
-        SmallStaticStr(SmallStrRef _str)
+        SmallStaticStr(SmallStrRef sstr)
         {
-            len = _str.len;
-            memcpy_s(chars, len, _str.chars, len);
+            len = sstr.len;
+            memcpy_s(chars, len, sstr.chars, len);
+            chars[len] = 0;
         }
-        SmallStaticStr(SmallStrRef _str, u8 char_ct, u8 startIndex = 0)
+        SmallStaticStr(SmallStrRef sstr, u8 char_ct, u8 startIndex = 0)
         {
             u8 start = ClampToBounds(startIndex);
             len = (u8)ClampToBounds(char_ct);
 
-            memcpy_s(chars, len, &_str.chars[start], len);
+            memcpy_s(chars, len, sstr.chars + start, len);
+            chars[len] = 0;
         }
 
         operator cstr() const noexcept { return (cstr)chars; }
 
         INLINE u8 Capacity() const noexcept { return SMALL_STATIC_STR_CAPACITY; }
         INLINE u8 Len() const noexcept { return len; }
-        INLINE u8 PenultLen() const noexcept
-        {
-            return ClampToBounds(len - (u8)1);
-        }
+        INLINE u8 PenultLen() const noexcept { return ClampToBounds(len - (u8)1); }
         INLINE utf8ptr Str() const noexcept { return chars; }
         INLINE logic::Bool Empty() const noexcept { return len == (u8)0; }
         INLINE void Clear()
@@ -353,10 +355,7 @@ namespace rac::string
             memset(chars, c, len);
         }
 
-        INLINE u8& operator[](u32 index) const noexcept
-        {
-            return chars[index];
-        }
+        INLINE u8& operator[](u32 index) const noexcept { return chars[index]; }
         INLINE SmallStrRef operator=(cstr rhs)
         {
             len = (u8)strnlen_s(rhs, STATIC_STR_CAPACITY);
@@ -374,9 +373,11 @@ namespace rac::string
 
         INLINE SmallStrRef operator+=(cstr rhs)
         {
+            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
+
             i32 rhs_len = (i32)strnlen_s(rhs, SMALL_STATIC_STR_CAPACITY);
             i32 new_len = len + rhs_len;
-            if (len == SMALL_STATIC_STR_CAPACITY || new_len >= SMALL_STATIC_STR_CAPACITY)
+            if (new_len > SMALL_STATIC_STR_CAPACITY)
                 return *this;
 
             memcpy_s(chars + len, new_len, rhs, rhs_len);
@@ -387,8 +388,10 @@ namespace rac::string
         }
         INLINE SmallStrRef operator+=(SmallStrRef rhs)
         {
+            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
+
             i32 new_len = len + rhs.len;
-            if (len == SMALL_STATIC_STR_CAPACITY || new_len >= SMALL_STATIC_STR_CAPACITY)
+            if (new_len > SMALL_STATIC_STR_CAPACITY)
                 return *this;
 
             memcpy_s(chars + len, new_len, rhs.chars, rhs.len);
@@ -399,34 +402,34 @@ namespace rac::string
         }
         INLINE SmallStrRef operator+=(u8 c)
         {
-            if (len == SMALL_STATIC_STR_CAPACITY) return *this;
+            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
             chars[len++] = c;
             return *this;
         }
 
         INLINE logic::Bool operator>(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, &rhs.len, len) > 0;
+            return memcmp(&len, rhs, len) > 0;
         }
         INLINE logic::Bool operator>=(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, &rhs.len, len) >= 0;
+            return memcmp(&len, rhs, len) >= 0;
         }
         INLINE logic::Bool operator<(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, &rhs.len, len) < 0;
+            return memcmp(&len, rhs, len) < 0;
         }
         INLINE logic::Bool operator<=(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, &rhs.len, len) <= 0;
+            return memcmp(&len, rhs, len) <= 0;
         }
         INLINE logic::Bool operator==(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, rhs.ToRef(), len) == 0;
+            return memcmp(&len, rhs, len) == 0;
         }
         INLINE logic::Bool operator!=(SmallStrRef rhs) const noexcept
         {
-            return memcmp(&len, rhs.ToRef(), len) != 0;
+            return memcmp(&len, rhs, len) != 0;
         }
 
         INLINE logic::Bool operator==(cstr rhs) const noexcept
@@ -442,22 +445,22 @@ namespace rac::string
             i32 rhs_len = (i32)strnlen_s(rhs, SMALL_STATIC_STR_CAPACITY);
 
 #pragma warning( disable : 6385) // Erroneous invalid data read warning
-            return rhs_len == len && memcmp(chars, rhs, rhs_len) != 0;
+            return rhs_len != len || memcmp(chars, rhs, rhs_len) != 0;
 #pragma warning( default : 6385)
         }
 
         INLINE logic::comp Compare(SmallStrRef arg) const noexcept
         {
-            return logic::comp(memcmp(&len, &arg.len, len));
+            return memcmp(&len, arg, len);
         }
         INLINE logic::comp Compare(cstr c_str) const noexcept
         {
-            return logic::comp(memcmp(chars, c_str, len));
+            return memcmp(chars, c_str, len);
         }
 
         INLINE cstr ToCstr() const noexcept { return (cstr)(chars); }
         INLINE mut_cstr ToMutCstr() const noexcept { return (mut_cstr)(chars); }
-        INLINE ptr ToPtr() const noexcept { return (ptr)(&len); }
+        INLINE ptr ToPtr() const noexcept { return &len; }
         INLINE u8ptr PtrToChars() const noexcept { return chars; }
         INLINE SmallStrRef ToRef() const noexcept { return *this; }
 
@@ -521,19 +524,19 @@ namespace rac::string
         }
         INLINE logic::Bool Contains(u8 target) const noexcept
         {
-            return IndexOf(target) > 0;
+            return IndexOf(target) > (u8)0;
         }
         INLINE logic::Bool Contains(u8 target, u8 startIndex) const noexcept
         {
-            return IndexOf(target, startIndex) > 0;
+            return IndexOf(target, startIndex) > (u8)0;
         }
         INLINE logic::Bool NullOrEmpty() const noexcept
         {
-            return *this == nullptr || len < 1;
+            return *this == nullptr || len < (u8)1;
         }
         INLINE logic::Bool EmptyOrWhitespace() const noexcept
         {
-            if (len < 1) return true;
+            if (len < (u8)1) return true;
 
             mut_i32 tmp_len = len;
             while (--tmp_len)
@@ -541,4 +544,17 @@ namespace rac::string
             return true;
         }
     };
+    INLINE static SmallStr operator +(SmallStrRef lhs, SmallStrRef rhs)
+    {
+        mut_SmallStr res(lhs);
+        res += rhs;
+        return res;
+    }
+    INLINE static SmallStr operator +(cstr lhs, SmallStrRef rhs)
+    {
+        mut_SmallStr res(lhs);
+        res += rhs;
+        return res;
+    }
+
 }
