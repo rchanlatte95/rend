@@ -134,6 +134,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <MinimalRebuild>false</MinimalRebuild>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <DisableSpecificWarnings>26819;26495;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +170,7 @@
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>26819;26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,6 +189,8 @@
     <ClInclude Include="inc\rac-io.h" />
     <ClInclude Include="inc\rac-logic.h" />
     <ClInclude Include="inc\rac-mth.h" />
+    <ClInclude Include="inc\rac-priorityqueue.h" />
+    <ClInclude Include="inc\rac-queue.h" />
     <ClInclude Include="inc\rac-shdr.h" />
     <ClInclude Include="inc\rac-stack.h" />
     <ClInclude Include="inc\rac-str.h" />

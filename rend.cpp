@@ -342,9 +342,12 @@ int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
 
-	Solution s;
-	vector<int> test = { 1,2,3 };
-	vector<vector<int>> res = s.subsets(test);
+
+	StaticQueue<int> test;
+
+	for (unsigned int i = 0, ct = test.Count(); i < ct; ++i)
+		std::cout << test.Dequeue() << std::endl;
+
 
 	/*
 	GetFrequency();
