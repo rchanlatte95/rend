@@ -145,16 +145,16 @@ namespace rac::mth
     typedef const Quaternion* quat_ptr;   typedef const Quaternion& quat_ref;
     typedef Quaternion* mut_quat_ptr; typedef Quaternion& mut_quat_ref;
 
-    const f32 PI = 3.14159265358979323846f;
-    const f32 SIXTH_PI = PI / 6.0f;
-    const f32 FOURTH_PI = PI / 4.0f;
-    const f32 THIRD_PI = PI / 3.0f;
-    const f32 HALF_PI = PI / 2.0f;
-    const f32 TAU = 2.0f * PI;
+    f32 PI = 3.14159265358979323846f;
+    f32 SIXTH_PI = PI / 6.0f;
+    f32 FOURTH_PI = PI / 4.0f;
+    f32 THIRD_PI = PI / 3.0f;
+    f32 HALF_PI = PI / 2.0f;
+    f32 TAU = 2.0f * PI;
 
-    const f32 INV_PI = 1.0f / PI;
-    const f32 DEG2RAD = PI / 180.0f;
-    const f32 RAD2DEG = 180.0f / PI;
+    f32 INV_PI = 1.0f / PI;
+    f32 DEG2RAD = PI / 180.0f;
+    f32 RAD2DEG = 180.0f / PI;
 
     f32 F32_EPSILON = FLT_EPSILON;
     f32 F32_MAX = FLT_MAX;
@@ -734,9 +734,9 @@ namespace rac::mth
     }
     static MAY_INLINE v3 Cross(v3 v1, v3 v2)
     {
-        return v3(v1.y * v2.z - v1.z * v2.y,
-            v1.z * v2.x - v1.x * v2.z,
-            v1.x * v2.y - v1.y * v2.x);
+        return v3(  v1.y * v2.z - v1.z * v2.y,
+                    v1.z * v2.x - v1.x * v2.z,
+                    v1.x * v2.y - v1.y * v2.x);
     }
 
     const v3 V3_ZERO = v3(0.0f);
@@ -750,4 +750,114 @@ namespace rac::mth
     const v3 V3_LEFT = -V3_RIGHT;
     const v3 V3_DOWN = -V3_UP;
     const v3 V3_BACKWARD = -V3_FORWARD;
+
+    class Quaternion
+    {
+    public:
+        mut_f32 x;
+        mut_f32 y;
+        mut_f32 z;
+        mut_f32 w;
+
+        Quaternion() { }
+        Quaternion(f32 _a)
+        {
+            x = _a;
+            y = _a;
+            z = _a;
+            w = _a;
+        }
+        Quaternion(f32 _a, f32 _w)
+        {
+            x = _a;
+            y = _a;
+            z = _a;
+            w = _w;
+        }
+        Quaternion(f32 _x, f32 _y, f32 _z, f32 _w)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+            w = _w;
+        }
+        Quaternion(v3 v, f32 _w)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+            w = _w;
+        }
+        Quaternion(v3 v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+            w = 1.0f;
+        }
+
+        INLINE quat_ref operator=(quat_ref rhs)
+        {
+            x = rhs.x;
+            y = rhs.y;
+            z = rhs.z;
+            w = rhs.w;
+            return *this;
+        }
+        INLINE quat operator -() const { return quat(-x, -y, -z, -w); }
+        INLINE quat_ref operator +=(quat_ref rhs)
+        {
+            x += rhs.x;
+            y += rhs.y;
+            z += rhs.z;
+            w += rhs.w;
+        }
+        INLINE quat_ref operator -=(quat_ref rhs)
+        {
+            x -= rhs.x;
+            y -= rhs.y;
+            z -= rhs.z;
+            w -= rhs.w;
+        }
+        INLINE quat_ref operator *=(f32 a)
+        {
+            x *= a;
+            y *= a;
+            z *= a;
+            w *= a;
+        }
+        INLINE quat_ref operator /=(f32 a)
+        {
+            f32 inv = 1.0f / a;
+            x *= inv;
+            y *= inv;
+            z *= inv;
+            w *= inv;
+        }
+
+        INLINE f32 SqrMag() { return x * x + y * y + z * z + w * w; }
+        INLINE f32 Mag() { return sqrtf(x * x + y * y + z * z + w * w); }
+        MAY_INLINE quat Conjugate() { return quat(-x, -y, -z, w); }
+        MAY_INLINE quat Norm()
+        {
+            mut_f32 mag = sqrtf(x * x + y * y + z * z + w * w);
+            if (mag == 0.0f) { mag = 1.0f; }
+
+            f32 inv_mag = 1.0f / mag;
+            return quat(x * inv_mag, y * inv_mag, z * inv_mag, w * inv_mag);
+        }
+        MAY_INLINE quat Invert()
+        {
+            mut_quat res = *this;
+            f32 sqrMag = x * x + y * y + z * z + w * w;
+            if (sqrMag != 0.0f)
+            {
+                f32 negMag = -1.0f / sqrMag;
+                res *= negMag;
+            }
+            return res;
+        }
+    };
+
+    quat IDENTITY = { 0.0f, 0.0f, 0.0f, 1.0f };
 }
