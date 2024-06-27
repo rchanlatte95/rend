@@ -681,58 +681,58 @@ namespace rac::mth
         INLINE v3 CrossZ() { return v3(y, -x, 0.0f); }
     };
 
-    INLINE static bool operator >(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator >(v3_ref lhs, v3_ref rhs) noexcept
     {
         return  lhs.x > rhs.x && lhs.y > rhs.y && lhs.z > rhs.z;
     }
-    INLINE static bool operator <(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator <(v3_ref lhs, v3_ref rhs) noexcept
     {
         return lhs.x < rhs.x && lhs.y < rhs.y && lhs.z < rhs.z;
     }
-    INLINE static bool operator >=(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator >=(v3_ref lhs, v3_ref rhs) noexcept
     {
         return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z;
     }
-    INLINE static bool operator <=(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator <=(v3_ref lhs, v3_ref rhs) noexcept
     {
         return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z;
     }
-    INLINE static bool operator ==(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator ==(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return  lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
     }
-    INLINE static bool operator !=(v3_ref lhs, v3_ref rhs)
+    INLINE static bool operator !=(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return !(lhs == rhs);
     }
 
-    INLINE static v3 operator +(v3_ref lhs, v3_ref rhs)
+    INLINE static v3 operator +(v3_ref lhs, v3_ref rhs) noexcept
     {
         return v3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
     }
-    INLINE static v3 operator -(v3_ref lhs, v3_ref rhs)
+    INLINE static v3 operator -(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return v3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
     }
-    INLINE static v3 operator *(v3_ref lhs, v3_ref rhs)
+    INLINE static v3 operator *(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return v3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
     }
-    INLINE static v3 operator /(v3_ref lhs, v3_ref rhs)
+    INLINE static v3 operator /(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return v3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
     }
 
     // Check if two vectors are approximately equal
-    static MAY_INLINE bool Approx(v3_ref a, v3_ref b)
+    static MAY_INLINE bool Approx(v3_ref a, v3_ref b) noexcept
     {
         return  Approx(a.x, b.x) && Approx(a.y, b.y) && Approx(a.z, b.z);
     }
-    static MAY_INLINE bool NotApprox(v3_ref a, v3_ref b)
+    static MAY_INLINE bool NotApprox(v3_ref a, v3_ref b) noexcept
     {
         return !Approx(a, b);
     }
-    static MAY_INLINE v3 Cross(v3 v1, v3 v2)
+    static MAY_INLINE v3 Cross(v3 v1, v3 v2) noexcept
     {
         return v3(  v1.y * v2.z - v1.z * v2.y,
                     v1.z * v2.x - v1.x * v2.z,
@@ -796,7 +796,7 @@ namespace rac::mth
             w = 1.0f;
         }
 
-        INLINE quat_ref operator=(quat_ref rhs)
+        INLINE quat_ref operator=(quat_ref rhs) noexcept
         {
             x = rhs.x;
             y = rhs.y;
@@ -804,29 +804,29 @@ namespace rac::mth
             w = rhs.w;
             return *this;
         }
-        INLINE quat operator -() const { return quat(-x, -y, -z, -w); }
-        INLINE quat_ref operator +=(quat_ref rhs)
+        INLINE quat operator -() const noexcept { return quat(-x, -y, -z, -w); }
+        INLINE quat_ref operator +=(quat_ref rhs) noexcept
         {
             x += rhs.x;
             y += rhs.y;
             z += rhs.z;
             w += rhs.w;
         }
-        INLINE quat_ref operator -=(quat_ref rhs)
+        INLINE quat_ref operator -=(quat_ref rhs) noexcept
         {
             x -= rhs.x;
             y -= rhs.y;
             z -= rhs.z;
             w -= rhs.w;
         }
-        INLINE quat_ref operator *=(f32 a)
+        INLINE quat_ref operator *=(f32 a) noexcept
         {
             x *= a;
             y *= a;
             z *= a;
             w *= a;
         }
-        INLINE quat_ref operator /=(f32 a)
+        INLINE quat_ref operator /=(f32 a) noexcept
         {
             f32 inv = 1.0f / a;
             x *= inv;
@@ -835,10 +835,10 @@ namespace rac::mth
             w *= inv;
         }
 
-        INLINE f32 SqrMag() { return x * x + y * y + z * z + w * w; }
-        INLINE f32 Mag() { return sqrtf(x * x + y * y + z * z + w * w); }
-        MAY_INLINE quat Conjugate() { return quat(-x, -y, -z, w); }
-        MAY_INLINE quat Norm()
+        INLINE f32 SqrMag() const noexcept { return x * x + y * y + z * z + w * w; }
+        INLINE f32 Mag() const noexcept { return sqrtf(x * x + y * y + z * z + w * w); }
+        MAY_INLINE quat Conjugate() const noexcept { return quat(-x, -y, -z, w); }
+        MAY_INLINE quat Norm() const noexcept
         {
             mut_f32 mag = sqrtf(x * x + y * y + z * z + w * w);
             if (mag == 0.0f) { mag = 1.0f; }
@@ -846,14 +846,13 @@ namespace rac::mth
             f32 inv_mag = 1.0f / mag;
             return quat(x * inv_mag, y * inv_mag, z * inv_mag, w * inv_mag);
         }
-        MAY_INLINE quat Invert()
+        MAY_INLINE quat Invert() const noexcept
         {
             mut_quat res = *this;
             f32 sqrMag = x * x + y * y + z * z + w * w;
             if (sqrMag != 0.0f)
             {
-                f32 negMag = -1.0f / sqrMag;
-                res *= negMag;
+                res /= -sqrMag;
             }
             return res;
         }
