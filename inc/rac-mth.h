@@ -173,24 +173,29 @@ namespace rac::mth
     #define RAC_F32_APPROX_NEG(a) (a <= F32_EPSILON)
 
     class Vector2;
-    typedef const Vector2 v2;    typedef Vector2 mut_v2;
-    typedef const Vector2* v2_ptr;   typedef const Vector2& v2_ref;
-    typedef Vector2* mut_v2_ptr; typedef Vector2& mut_v2_ref;
+    typedef const Vector2 v2;       typedef Vector2 mut_v2;
+    typedef const Vector2* v2_ptr;  typedef const Vector2& v2_ref;
+    typedef Vector2* mut_v2_ptr;    typedef Vector2& mut_v2_ref;
 
     class Vector3;
-    typedef const Vector3 v3; typedef Vector3 mut_v3;
-    typedef const Vector3* v3_ptr;   typedef const Vector3& v3_ref;
-    typedef Vector3* mut_v3_ptr; typedef Vector3& mut_v3_ref;
+    typedef const Vector3 v3;       typedef Vector3 mut_v3;
+    typedef const Vector3* v3_ptr;  typedef const Vector3& v3_ref;
+    typedef Vector3* mut_v3_ptr;    typedef Vector3& mut_v3_ref;
+
+    class Vector4;
+    typedef const Vector4 v4;       typedef Vector4 mut_v4;
+    typedef const Vector4* v4_ptr;  typedef const Vector4& v4_ref;
+    typedef Vector4* mut_v4_ptr;    typedef Vector4& mut_v4_ref;
 
     class Quaternion;
-    typedef const Quaternion quat; typedef Quaternion mut_quat;
-    typedef const Quaternion* quat_ptr;   typedef const Quaternion& quat_ref;
-    typedef Quaternion* mut_quat_ptr; typedef Quaternion& mut_quat_ref;
+    typedef const Quaternion quat;      typedef Quaternion mut_quat;
+    typedef const Quaternion* quat_ptr; typedef const Quaternion& quat_ref;
+    typedef Quaternion* mut_quat_ptr;   typedef Quaternion& mut_quat_ref;
 
     class Matrix;
-    typedef const Matrix matrix; typedef Matrix mut_matrix;
+    typedef const Matrix matrix;        typedef Matrix mut_matrix;
     typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
-    typedef Matrix* mut_matrix_ptr; typedef Matrix& mut_matrix_ref;
+    typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
 
     static constexpr bool Approx(f32 a, f32 b)
     {
@@ -873,10 +878,224 @@ namespace rac::mth
     };
     quat IDENTITY = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+    i32 V4_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
+    i32 V4_STRING_LEN = V4_STRING_MAX - 1;
+    class Vector4
+    {
+    public:
+        mut_f32 x = 0.0f;
+        mut_f32 y = 0.0f;
+        mut_f32 z = 0.0f;
+
+        Vector4() { }
+        Vector4(i8 _x, i8 _y, i8 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+        Vector4(i16 _x, i16 _y, i16 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+        Vector4(i32 _x, i32 _y, i32 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+        Vector4(u8 _x, u8 _y, u8 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+        Vector4(u16 _x, u16 _y, u16 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+        Vector4(u32 _x, u32 _y, u32 _z)
+        {
+            x = (mut_f32)_x;
+            y = (mut_f32)_y;
+            z = (mut_f32)_z;
+        }
+
+        Vector4(f32 _a)
+        {
+            x = _a;
+            y = _a;
+            z = _a;
+        }
+        Vector4(f32 _x, f32 _y)
+        {
+            x = _x;
+            y = _y;
+            z = 0.0f;
+        }
+        Vector4(f32 _x, f32 _y, f32 _z)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+        }
+        Vector4(v2 v, f32 _z)
+        {
+            x = v.x;
+            y = v.y;
+            z = _z;
+        }
+        Vector4(v2 v)
+        {
+            x = v.x;
+            y = v.y;
+            z = 0.0f;
+        }
+
+        INLINE v4_ref operator=(v4_ref rhs)
+        {
+            x = rhs.x;
+            y = rhs.y;
+            z = rhs.z;
+            return *this;
+        }
+        INLINE v4 operator -() const { return v4(-x, -y, -z); }
+        INLINE v4 operator *(f32 v) { return v4(x * v, y * v, z * v); }
+        INLINE v4 operator /(f32 v)
+        {
+            f32 inv = 1.0f / v;
+            return v4(x * inv, y * inv, z * inv);
+        }
+        INLINE v4_ref operator +=(v4_ref rhs)
+        {
+            x += rhs.x;
+            y += rhs.y;
+            z += rhs.z;
+        }
+        INLINE v4_ref operator -=(v4_ref rhs)
+        {
+            x -= rhs.x;
+            y -= rhs.y;
+            z -= rhs.z;
+        }
+        INLINE v4_ref operator *=(v4_ref rhs)
+        {
+            x *= rhs.x;
+            y *= rhs.y;
+            z *= rhs.z;
+        }
+        INLINE v4_ref operator *=(f32 a)
+        {
+            x *= a;
+            y *= a;
+            z *= a;
+        }
+        INLINE v4_ref operator /=(v3_ref rhs)
+        {
+            x /= rhs.x;
+            y /= rhs.y;
+            z /= rhs.z;
+        }
+        INLINE v4_ref operator /=(f32 a)
+        {
+            f32 inv = 1.0f / a;
+            x *= inv;
+            y *= inv;
+            z *= inv;
+        }
+
+        INLINE ptr Ptr() const { return (ptr)(&x); }
+        INLINE v4_ref Ref() const { return *this; }
+
+        INLINE string::StrRef ToStr(string::mut_StrRef str) const
+        {
+            char buff[V4_STRING_MAX] = { 0 };
+            sprintf_s(buff, V4_STRING_LEN, "(%0.3f, %0.3f, %0.3f, %0.3f)", x, y, z);
+            return str = buff;
+        }
+
+        INLINE v4 Max(v4 v)
+        {
+            return v4(fmaxf(x, v.x), fmaxf(y, v.y), fmaxf(z, v.z));
+        }
+        INLINE v4 Min(v4 v)
+        {
+            return v4(fminf(x, v.x), fminf(y, v.y), fminf(z, v.z));
+        }
+        INLINE v4 Clamp(f32 min, f32 max)
+        {
+            return v4(x > max ? max : (x < min ? min : x),
+                    y > max ? max : (y < min ? min : y),
+                    z > max ? max : (z < min ? min : z));
+        }
+        INLINE v4 Clamp(f32 x_min, f32 x_max, f32 y_min, f32 y_max, f32 z_min, f32 z_max)
+        {
+            return v4(x > x_max ? x_max : (x < x_min ? x_min : x),
+                    y > y_max ? y_max : (y < y_min ? y_min : y),
+                    z > z_max ? z_max : (z < z_min ? z_min : z));
+        }
+        INLINE v4 Clamp(v4 min, v4 max)
+        {
+            return v4(x > max.x ? max.x : (x < min.x ? min.x : x),
+                    y > max.y ? max.y : (y < min.y ? min.y : y),
+                    z > max.z ? max.z : (z < min.z ? min.z : z));
+        }
+        INLINE v4 Inv() const
+        {
+            return v4(1.0f / x, 1.0f / y, 1.0f / z);
+        }
+        INLINE f32 Mag() const
+        {
+            return sqrtf(x * x + y * y + z * z);
+        }
+        INLINE f32 InvMag() const
+        {
+            return 1.0f / sqrtf(x * x + y * y + z * z);
+        }
+        INLINE f32 SqrMag() const
+        {
+            return x * x + y * y + z * z;
+        }
+        INLINE f32 Dot(v4_ref v) const
+        {
+            return x * v.x + y * v.y + z * v.z;
+        }
+        INLINE f32 Dist(v4_ref from) const
+        {
+            return sqrtf((x - from.x) * (x - from.x) +
+                        (y * from.y) * (y * from.y) +
+                        (z * from.z) * (z * from.z));
+        }
+        INLINE f32 SqrDist(v4_ref from) const
+        {
+            return  (x - from.x) * (x - from.x) +
+                    (y * from.y) * (y * from.y) +
+                    (z * from.z) * (z * from.z);
+        }
+        INLINE v4 Norm() const
+        {
+            f32 inv_mag = InvMag();
+            if (inv_mag > F32_EPSILON)
+            {
+                return v4(x * inv_mag, y * inv_mag, z * inv_mag);
+            }
+            else return *this;
+        }
+    };
+
+    const v4 V4_ZERO = v4(0.0f);
+    const v4 V4_ONE = v4(1.0f);
+    const v4 V4_SIGNED_ONE = -V4_ONE;
+
     // Matrix type (OpenGL style 4x4 - right handed, column major)
     class Matrix
     {
     public:
+
         mut_f32 r0c0, r0c1, r0c2, r0c3;
         mut_f32 r1c0, r1c1, r1c2, r1c3;
         mut_f32 r2c0, r2c1, r2c2, r2c3;
@@ -945,4 +1164,5 @@ namespace rac::mth
     };
 
     matrix IDENTITY(1.0f, 0.0f);
+    i32 MATRIX_RANK = 4;
 }
