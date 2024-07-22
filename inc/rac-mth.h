@@ -883,205 +883,208 @@ namespace rac::mth
     class Vector4
     {
     public:
-        mut_f32 x = 0.0f;
-        mut_f32 y = 0.0f;
-        mut_f32 z = 0.0f;
+        mut_f32 v0 = 0.0f;
+        mut_f32 v1 = 0.0f;
+        mut_f32 v2 = 0.0f;
+        mut_f32 v3 = 0.0f;
 
         Vector4() { }
-        Vector4(i8 _x, i8 _y, i8 _z)
+        Vector4(i8 _v0, i8 _v1, i8 _v2, i8 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
-        Vector4(i16 _x, i16 _y, i16 _z)
+        Vector4(i16 _v0, i16 _v1, i16 _v2, i16 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
-        Vector4(i32 _x, i32 _y, i32 _z)
+        Vector4(i32 _v0, i32 _v1, i32 _v2, i32 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
-        Vector4(u8 _x, u8 _y, u8 _z)
+        Vector4(u8 _v0, u8 _v1, u8 _v2, u8 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
-        Vector4(u16 _x, u16 _y, u16 _z)
+        Vector4(u16 _v0, u16 _v1, u16 _v2, u16 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
-        Vector4(u32 _x, u32 _y, u32 _z)
+        Vector4(u32 _v0, u32 _v1, u32 _v2, u32 _v3)
         {
-            x = (mut_f32)_x;
-            y = (mut_f32)_y;
-            z = (mut_f32)_z;
+            v0 = (mut_f32)_v0;
+            v1 = (mut_f32)_v1;
+            v2 = (mut_f32)_v2;
+            v3 = (mut_f32)_v3;
         }
 
         Vector4(f32 _a)
         {
-            x = _a;
-            y = _a;
-            z = _a;
+            v0 = _a;
+            v1 = _a;
+            v2 = _a;
+            v3 = _a;
         }
-        Vector4(f32 _x, f32 _y)
+        Vector4(f32 _v0, f32 _v1, f32 _v2, f32 a = 0.0f)
         {
-            x = _x;
-            y = _y;
-            z = 0.0f;
+            v0 = _v0;
+            v1 = _v1;
+            v2 = _v2;
+            v3 = a;
         }
-        Vector4(f32 _x, f32 _y, f32 _z)
+        Vector4(Vector3 _v, f32 a = 0.0f)
         {
-            x = _x;
-            y = _y;
-            z = _z;
-        }
-        Vector4(v2 v, f32 _z)
-        {
-            x = v.x;
-            y = v.y;
-            z = _z;
-        }
-        Vector4(v2 v)
-        {
-            x = v.x;
-            y = v.y;
-            z = 0.0f;
+            v0 = _v.x;
+            v1 = _v.y;
+            v2 = _v.z;
+            v3 = a;
         }
 
         INLINE v4_ref operator=(v4_ref rhs)
         {
-            x = rhs.x;
-            y = rhs.y;
-            z = rhs.z;
+            v0 = rhs.v0;
+            v1 = rhs.v1;
+            v2 = rhs.v2;
+            v3 = rhs.v3;
             return *this;
         }
-        INLINE v4 operator -() const { return v4(-x, -y, -z); }
-        INLINE v4 operator *(f32 v) { return v4(x * v, y * v, z * v); }
+        INLINE v4 operator -() const { return v4(-v0, -v1, -v2, -v3); }
+        INLINE v4 operator *(f32 v) { return v4(v0 * v, v1 * v, v2 * v, v3 * v); }
         INLINE v4 operator /(f32 v)
         {
             f32 inv = 1.0f / v;
-            return v4(x * inv, y * inv, z * inv);
+            return v4(v0 * inv, v1 * inv, v2 * inv, v3 * inv);
         }
         INLINE v4_ref operator +=(v4_ref rhs)
         {
-            x += rhs.x;
-            y += rhs.y;
-            z += rhs.z;
+            v0 += rhs.v0;
+            v1 += rhs.v1;
+            v2 += rhs.v2;
+            v3 += rhs.v3;
         }
         INLINE v4_ref operator -=(v4_ref rhs)
         {
-            x -= rhs.x;
-            y -= rhs.y;
-            z -= rhs.z;
+            v0 -= rhs.v0;
+            v1 -= rhs.v1;
+            v2 -= rhs.v2;
+            v3 -= rhs.v3;
         }
         INLINE v4_ref operator *=(v4_ref rhs)
         {
-            x *= rhs.x;
-            y *= rhs.y;
-            z *= rhs.z;
+            v0 *= rhs.v0;
+            v1 *= rhs.v1;
+            v2 *= rhs.v2;
+            v3 *= rhs.v3;
         }
         INLINE v4_ref operator *=(f32 a)
         {
-            x *= a;
-            y *= a;
-            z *= a;
+            v0 *= a;
+            v1 *= a;
+            v2 *= a;
+            v3 *= a;
         }
-        INLINE v4_ref operator /=(v3_ref rhs)
+        INLINE v4_ref operator /=(v4_ref rhs)
         {
-            x /= rhs.x;
-            y /= rhs.y;
-            z /= rhs.z;
+            v0 /= rhs.v0;
+            v1 /= rhs.v1;
+            v2 /= rhs.v2;
+            v2 /= rhs.v3;
         }
         INLINE v4_ref operator /=(f32 a)
         {
             f32 inv = 1.0f / a;
-            x *= inv;
-            y *= inv;
-            z *= inv;
+            v0 *= inv;
+            v1 *= inv;
+            v2 *= inv;
+            v3 *= inv;
         }
 
-        INLINE ptr Ptr() const { return (ptr)(&x); }
+        INLINE ptr Ptr() const { return (ptr)(&v0); }
         INLINE v4_ref Ref() const { return *this; }
 
         INLINE string::StrRef ToStr(string::mut_StrRef str) const
         {
             char buff[V4_STRING_MAX] = { 0 };
-            sprintf_s(buff, V4_STRING_LEN, "(%0.3f, %0.3f, %0.3f, %0.3f)", x, y, z);
+            sprintf_s(buff, V4_STRING_LEN, "(%0.3f, %0.3f, %0.3f, %0.3f)", v0, v1, v2, v3);
             return str = buff;
         }
 
         INLINE v4 Max(v4 v)
         {
-            return v4(fmaxf(x, v.x), fmaxf(y, v.y), fmaxf(z, v.z));
+            return v4(fmaxf(v0, v.v0), fmaxf(v1, v.v1), fmaxf(v2, v.v2), fmaxf(v3, v.v3));
         }
         INLINE v4 Min(v4 v)
         {
-            return v4(fminf(x, v.x), fminf(y, v.y), fminf(z, v.z));
+            return v4(fminf(v0, v.v0), fminf(v1, v.v1), fminf(v2, v.v2), fminf(v3, v.v3));
         }
         INLINE v4 Clamp(f32 min, f32 max)
         {
-            return v4(x > max ? max : (x < min ? min : x),
-                    y > max ? max : (y < min ? min : y),
-                    z > max ? max : (z < min ? min : z));
-        }
-        INLINE v4 Clamp(f32 x_min, f32 x_max, f32 y_min, f32 y_max, f32 z_min, f32 z_max)
-        {
-            return v4(x > x_max ? x_max : (x < x_min ? x_min : x),
-                    y > y_max ? y_max : (y < y_min ? y_min : y),
-                    z > z_max ? z_max : (z < z_min ? z_min : z));
+            return v4(v0 > max ? max : (v0 < min ? min : v0),
+                    v1 > max ? max : (v1 < min ? min : v1),
+                    v2 > max ? max : (v2 < min ? min : v2),
+                    v3 > max ? max : (v3 < min ? min : v3));
         }
         INLINE v4 Clamp(v4 min, v4 max)
         {
-            return v4(x > max.x ? max.x : (x < min.x ? min.x : x),
-                    y > max.y ? max.y : (y < min.y ? min.y : y),
-                    z > max.z ? max.z : (z < min.z ? min.z : z));
+            return v4(v0 > max.v0 ? max.v0 : (v0 < min.v0 ? min.v0 : v0),
+                    v1 > max.v1 ? max.v1 : (v1 < min.v1 ? min.v1 : v1),
+                    v2 > max.v2 ? max.v2 : (v2 < min.v2 ? min.v2 : v2),
+                    v3 > max.v3 ? max.v3 : (v3 < min.v3 ? min.v3 : v3));
         }
         INLINE v4 Inv() const
         {
-            return v4(1.0f / x, 1.0f / y, 1.0f / z);
+            return v4(1.0f / v0, 1.0f / v1, 1.0f / v2, 1.0f / v3);
         }
         INLINE f32 Mag() const
         {
-            return sqrtf(x * x + y * y + z * z);
+            return sqrtf(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3);
         }
         INLINE f32 InvMag() const
         {
-            return 1.0f / sqrtf(x * x + y * y + z * z);
+            return 1.0f / sqrtf(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3);
         }
         INLINE f32 SqrMag() const
         {
-            return x * x + y * y + z * z;
+            return v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3;
         }
         INLINE f32 Dot(v4_ref v) const
         {
-            return x * v.x + y * v.y + z * v.z;
+            return v0 * v.v0 + v1 * v.v1 + v2 * v.v2 + v3 * v.v3;
         }
         INLINE f32 Dist(v4_ref from) const
         {
-            return sqrtf((x - from.x) * (x - from.x) +
-                        (y * from.y) * (y * from.y) +
-                        (z * from.z) * (z * from.z));
+            return sqrtf((v0 - from.v0) * (v0 - from.v0) +
+                        (v1 * from.v1) * (v1 * from.v1) +
+                        (v2 * from.v2) * (v2 * from.v2) +
+                        (v3 * from.v3) * (v3 * from.v3));
         }
         INLINE f32 SqrDist(v4_ref from) const
         {
-            return  (x - from.x) * (x - from.x) +
-                    (y * from.y) * (y * from.y) +
-                    (z * from.z) * (z * from.z);
+            return  (v0 - from.v0) * (v0 - from.v0) +
+                    (v1 * from.v1) * (v1 * from.v1) +
+                    (v2 * from.v2) * (v2 * from.v2) +
+                    (v3 * from.v3) * (v3 * from.v3);
         }
         INLINE v4 Norm() const
         {
             f32 inv_mag = InvMag();
             if (inv_mag > F32_EPSILON)
             {
-                return v4(x * inv_mag, y * inv_mag, z * inv_mag);
+                return v4(v0 * inv_mag, v1 * inv_mag, v2 * inv_mag, v3 * inv_mag);
             }
             else return *this;
         }
