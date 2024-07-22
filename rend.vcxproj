@@ -195,6 +195,7 @@
     <ClInclude Include="inc\rac-stack.h" />
     <ClInclude Include="inc\rac-str.h" />
     <ClInclude Include="inc\rac-types.h" />
+    <ClInclude Include="rac-clr.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hello-tri.glsl" />

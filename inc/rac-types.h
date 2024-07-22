@@ -26,6 +26,9 @@ typedef const char** cstrptr;	typedef char** mut_cstrptr;
 typedef const int8_t i8;    typedef const uint8_t u8;
 typedef int8_t mut_i8;      typedef uint8_t mut_u8;
 
+typedef const int8_t sbyte;    typedef const uint8_t ubyte;
+typedef int8_t mut_sbyte;      typedef uint8_t mut_ubyte;
+
 typedef const int16_t i16;  typedef const uint16_t u16;
 typedef int16_t mut_i16;    typedef uint16_t mut_u16;
 
