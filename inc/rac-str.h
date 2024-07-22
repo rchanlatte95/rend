@@ -311,8 +311,8 @@ namespace rac::string
         SmallStaticStr() { }
         SmallStaticStr(cstr c_str)
         {
-            len = (u8)strnlen_s(c_str, SMALL_STATIC_STR_CAPACITY);
-            memcpy_s(chars, SMALL_STATIC_STR_CAPACITY, c_str, len);
+            len = (u8)strnlen_s(c_str, SMALL_STATIC_STR_MAX_INDEX);
+            memcpy_s(chars, SMALL_STATIC_STR_MAX_INDEX, c_str, len);
             chars[len] = 0;
         }
         SmallStaticStr(cstr c_str, u8 char_ct, u8 startIndex = 0)

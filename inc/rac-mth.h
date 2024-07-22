@@ -143,21 +143,6 @@ namespace rac::mth
         }
     };
 
-    class Vector2;
-    typedef const Vector2 v2;    typedef Vector2 mut_v2;
-    typedef const Vector2* v2_ptr;   typedef const Vector2& v2_ref;
-    typedef Vector2* mut_v2_ptr; typedef Vector2& mut_v2_ref;
-
-    class Vector3;
-    typedef const Vector3 v3; typedef Vector3 mut_v3;
-    typedef const Vector3* v3_ptr;   typedef const Vector3& v3_ref;
-    typedef Vector3* mut_v3_ptr; typedef Vector3& mut_v3_ref;
-
-    class Quaternion;
-    typedef const Quaternion quat; typedef Quaternion mut_quat;
-    typedef const Quaternion* quat_ptr;   typedef const Quaternion& quat_ref;
-    typedef Quaternion* mut_quat_ptr; typedef Quaternion& mut_quat_ref;
-
     f32 PI = 3.14159265358979323846f;
     f32 SIXTH_PI = PI / 6.0f;
     f32 FOURTH_PI = PI / 4.0f;
@@ -186,6 +171,26 @@ namespace rac::mth
     #define RAC_F32_APPROX_LESS_OR_EQUAL(a, b) (fabsf(a - b) <= SIGNED_F32_EPSILON)
     #define RAC_F32_APPROX_POS(a) (a >= F32_EPSILON)
     #define RAC_F32_APPROX_NEG(a) (a <= F32_EPSILON)
+
+    class Vector2;
+    typedef const Vector2 v2;    typedef Vector2 mut_v2;
+    typedef const Vector2* v2_ptr;   typedef const Vector2& v2_ref;
+    typedef Vector2* mut_v2_ptr; typedef Vector2& mut_v2_ref;
+
+    class Vector3;
+    typedef const Vector3 v3; typedef Vector3 mut_v3;
+    typedef const Vector3* v3_ptr;   typedef const Vector3& v3_ref;
+    typedef Vector3* mut_v3_ptr; typedef Vector3& mut_v3_ref;
+
+    class Quaternion;
+    typedef const Quaternion quat; typedef Quaternion mut_quat;
+    typedef const Quaternion* quat_ptr;   typedef const Quaternion& quat_ref;
+    typedef Quaternion* mut_quat_ptr; typedef Quaternion& mut_quat_ref;
+
+    class Matrix;
+    typedef const Matrix matrix; typedef Matrix mut_matrix;
+    typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
+    typedef Matrix* mut_matrix_ptr; typedef Matrix& mut_matrix_ref;
 
     static constexpr bool Approx(f32 a, f32 b)
     {
@@ -866,6 +871,78 @@ namespace rac::mth
             return str = buff;
         }
     };
-
     quat IDENTITY = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+    // Matrix type (OpenGL style 4x4 - right handed, column major)
+    class Matrix
+    {
+    public:
+        mut_f32 r0c0, r0c1, r0c2, r0c3;
+        mut_f32 r1c0, r1c1, r1c2, r1c3;
+        mut_f32 r2c0, r2c1, r2c2, r2c3;
+        mut_f32 r3c0, r3c1, r3c2, r3c3;
+
+        Matrix() {}
+        Matrix(f32 init)
+        {
+            r0c0 = r0c1 = r0c2 = r0c3 = init;
+            r1c0 = r1c1 = r1c2 = r1c3 = init;
+            r2c0 = r2c1 = r2c2 = r2c3 = init;
+            r3c0 = r3c1 = r3c2 = r3c3 = init;
+        }
+        Matrix( f32 _r0c0, f32 _r0c1, f32 _r0c2, f32 _r0c3,
+               f32 _r1c0, f32 _r1c1, f32 _r1c2, f32 _r1c3,
+               f32 _r2c0, f32 _r2c1, f32 _r2c2, f32 _r2c3,
+               f32 _r3c0, f32 _r3c1, f32 _r3c2, f32 _r3c3)
+        {
+            r0c0 = _r0c0; r0c1 = _r0c1; r0c2 = _r0c2; r0c3 = _r0c3;
+            r1c0 = _r1c0; r1c1 = _r1c1; r1c2 = _r1c2; r1c3 = _r1c3;
+            r2c0 = _r2c0; r2c1 = _r2c1; r2c2 = _r2c2; r2c3 = _r2c3;
+            r3c0 = _r3c0; r3c1 = _r3c1; r3c2 = _r3c2; r3c3 = _r3c3;
+        }
+        Matrix(f32 main_diagonal, f32 off_diagonal_)
+        {
+            r0c0 = main_diagonal; r0c1 = off_diagonal_; r0c2 = off_diagonal_; r0c3 = off_diagonal_;
+            r1c0 = off_diagonal_; r1c1 = main_diagonal; r1c2 = off_diagonal_; r1c3 = off_diagonal_;
+            r2c0 = off_diagonal_; r2c1 = off_diagonal_; r2c2 = main_diagonal; r2c3 = off_diagonal_;
+            r3c0 = off_diagonal_; r3c1 = off_diagonal_; r3c2 = off_diagonal_; r3c3 = main_diagonal;
+        }
+        Matrix(f32 inv_diagonal, f32 off_diagonal, bool inverse_diagonal)
+        {
+            r0c0 = off_diagonal; r0c1 = off_diagonal; r0c2 = off_diagonal; r0c3 = inv_diagonal;
+            r1c0 = off_diagonal; r1c1 = off_diagonal; r1c2 = inv_diagonal; r1c3 = off_diagonal;
+            r2c0 = off_diagonal; r2c1 = inv_diagonal; r2c2 = off_diagonal; r2c3 = off_diagonal;
+            r3c0 = inv_diagonal; r3c1 = off_diagonal; r3c2 = off_diagonal; r3c3 = off_diagonal;
+        }
+
+        INLINE matrix_ref operator=(matrix_ref rhs) noexcept
+        {
+            r0c0 = rhs.r0c0; r0c1 = rhs.r0c1; r0c2 = rhs.r0c2; r0c3 = rhs.r0c3;
+            r1c0 = rhs.r1c0; r1c1 = rhs.r1c1; r1c2 = rhs.r1c2; r1c3 = rhs.r1c3;
+            r2c0 = rhs.r2c0; r2c1 = rhs.r2c1; r2c2 = rhs.r2c2; r2c3 = rhs.r2c3;
+            r3c0 = rhs.r3c0; r3c1 = rhs.r3c1; r3c2 = rhs.r3c2; r3c3 = rhs.r3c3;
+            return *this;
+        }
+
+        INLINE matrix_ref operator *=(f32 a) noexcept
+        {
+            r0c0 *= a; r0c1 *= a; r0c2 *= a; r0c3 *= a;
+            r1c0 *= a; r1c1 *= a; r0c2 *= a; r1c3 *= a;
+            r2c0 *= a; r2c1 *= a; r0c2 *= a; r2c3 *= a;
+            r3c0 *= a; r3c1 *= a; r0c2 *= a; r3c3 *= a;
+            return *this;
+        }
+
+        INLINE matrix_ref operator /=(f32 a) noexcept
+        {
+            f32 inv_a = 1.0f / a;
+            r0c0 *= inv_a; r0c1 *= inv_a; r0c2 *= inv_a; r0c3 *= inv_a;
+            r1c0 *= inv_a; r1c1 *= inv_a; r0c2 *= inv_a; r1c3 *= inv_a;
+            r2c0 *= inv_a; r2c1 *= inv_a; r0c2 *= inv_a; r2c3 *= inv_a;
+            r3c0 *= inv_a; r3c1 *= inv_a; r0c2 *= inv_a; r3c3 *= inv_a;
+            return *this;
+        }
+    };
+
+    matrix IDENTITY(1.0f, 0.0f);
 }
