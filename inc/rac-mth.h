@@ -1095,6 +1095,7 @@ namespace rac::mth
     const v4 V4_SIGNED_ONE = -V4_ONE;
 
     // Matrix type (OpenGL style 4x4 - right handed, column major)
+    i32 MATRIX_RANK = 4;
     class Matrix
     {
     public:
@@ -1164,8 +1165,32 @@ namespace rac::mth
             r3c0 *= inv_a; r3c1 *= inv_a; r0c2 *= inv_a; r3c3 *= inv_a;
             return *this;
         }
+
+        INLINE v4 GetMainDiagonal() const noexcept
+        {
+            return v4(r0c0, r1c1, r2c2, r3c3);
+        }
+        INLINE v4 GetInvDiagonal() const noexcept
+        {
+            return v4(r3c0, r2c1, r1c2, r0c3);
+        }
+
+        MAY_INLINE void Transpose() noexcept
+        {
+            mut_f32 tmp = r0c1;
+            r0c1 = r1c0;
+            r1c0 = tmp;
+
+            tmp = r0c1;
+            r0c1 = r1c0;
+            r1c0 = tmp;
+        }
+
+        MAY_INLINE f32 Det() const noexcept
+        {
+            return 0.0f;
+        }
     };
 
     matrix IDENTITY(1.0f, 0.0f);
-    i32 MATRIX_RANK = 4;
 }
