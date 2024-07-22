@@ -9,7 +9,20 @@
 
 #pragma warning(pop)
 
+// Single precision floating point number has a range of eight
+// digits. Add a decimal point, a negative sign, and a space
+// for the null terminator and you have the length of a float
+// string.
+#define RAC_F32_UNSIGNED_RANGE 8
+#define RAC_F32_SIGNED_RANGE (RAC_F32_UNSIGNED_RANGE + 1)
 
+i32 COMMA_CHAR_LEN = 1;
+i32 SPACE_CHAR_LEN = 1;
+i32 COMMA_SPACE_LEN = COMMA_CHAR_LEN + SPACE_CHAR_LEN;
+i32 PARENTHESES_LEN = 2;
+
+i32 F32_STR_MAX = RAC_F32_SIGNED_RANGE + 3;
+i32 F32_STR_LEN = F32_STR_MAX - 1;
 namespace rac::mth
 {
     class Vector2I16;
@@ -164,13 +177,6 @@ namespace rac::mth
     f32 F32_ONE_EPSILON = 1.0f - F32_EPSILON;
     f32 SIGNED_F32_ONE_EPSILON = -F32_ONE_EPSILON;
 
-    // Single precision floating point number has a range of eight
-    // digits. Add a decimal point, a negative sign, and a space
-    // for the null terminator and you have the length of a float
-    // string.
-    #define RAC_F32_UNSIGNED_RANGE 8
-    #define RAC_F32_SIGNED_RANGE (RAC_F32_UNSIGNED_RANGE + 1)
-
     #define RAC_F32_APPROX_ZERO(a) (fabsf(a) <= F32_EPSILON)
     #define RAC_F32_APPROX_ONE(a) (RAC_F32_APPROX(a, F32_ONE_EPSILON))
 
@@ -192,9 +198,6 @@ namespace rac::mth
         return fabsf(a - b) < max(F32_MIN, norm);
     }
 
-    i32 F32_STR_MAX = RAC_F32_SIGNED_RANGE + 3;
-    i32 F32_STR_LEN = F32_STR_MAX - 1;
-
     static f32 Clamp(f32 x, f32 min, f32 max)
     {
         if (fabsf(x - max) > F32_EPSILON) return max;
@@ -208,11 +211,8 @@ namespace rac::mth
         return x;
     }
 
-    i32 COMMA_SPACE_LEN = 2;
-    i32 PARENTHESES_LEN = 2;
     i32 V2_STRING_MAX = (F32_STR_LEN * 2) + COMMA_SPACE_LEN + PARENTHESES_LEN + 1;
     i32 V2_STRING_LEN = V2_STRING_MAX - 1;
-
     class Vector2
     {
     public:
@@ -649,14 +649,14 @@ namespace rac::mth
         INLINE f32 Dist(v3_ref from) const
         {
             return sqrtf((x - from.x) * (x - from.x) +
-                (y * from.y) * (y * from.y) +
-                (z * from.z) * (z * from.z));
+                        (y * from.y) * (y * from.y) +
+                        (z * from.z) * (z * from.z));
         }
         INLINE f32 SqrDist(v3_ref from) const
         {
             return  (x - from.x) * (x - from.x) +
-                (y * from.y) * (y * from.y) +
-                (z * from.z) * (z * from.z);
+                    (y * from.y) * (y * from.y) +
+                    (z * from.z) * (z * from.z);
         }
         INLINE v3 Norm() const
         {
@@ -751,6 +751,8 @@ namespace rac::mth
     const v3 V3_DOWN = -V3_UP;
     const v3 V3_BACKWARD = -V3_FORWARD;
 
+    i32 QUAT_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
+    i32 QUAT_STRING_LEN = QUAT_STRING_MAX - 1;
     class Quaternion
     {
     public:
@@ -855,6 +857,13 @@ namespace rac::mth
                 res /= -sqrMag;
             }
             return res;
+        }
+
+        INLINE string::StrRef ToStr(string::mut_StrRef str) const
+        {
+            char buff[QUAT_STRING_MAX] = { 0 };
+            sprintf_s(buff, QUAT_STRING_LEN, "(%0.3f, %0.3f, %0.3f, %0.3f)", x, y, z, w);
+            return str = buff;
         }
     };
 

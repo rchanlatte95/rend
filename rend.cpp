@@ -8,6 +8,7 @@
 #include <glad.h>
 #include <khrplatform.h>
 
+#include "rac-clr.h"
 #include "inc/rac-types.h"
 #include "inc/rac-logic.h"
 #include "inc/rac-mth.h"
@@ -28,6 +29,7 @@ using namespace rac::gl;
 using namespace rac::string;
 using namespace rac::logic;
 using namespace rac::static_collections;
+using namespace rac::gfx;
 
 #pragma warning(pop)
 
@@ -342,12 +344,10 @@ int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
 
-
-	StaticQueue<int> test;
-
-	for (unsigned int i = 0, ct = test.Count(); i < ct; ++i)
-		std::cout << test.Dequeue() << std::endl;
-
+	mut_color c(128);
+	mut_Str str;
+	c.ToStr(str);
+	printf("%s", str.ToCstr());
 
 	/*
 	GetFrequency();
