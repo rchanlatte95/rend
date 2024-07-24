@@ -56,7 +56,10 @@
     <ClInclude Include="inc\rac-priorityqueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rac-clr.h">
+    <ClInclude Include="inc\rac.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\rac-clr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

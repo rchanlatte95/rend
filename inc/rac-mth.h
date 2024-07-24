@@ -4,6 +4,7 @@
 #include <float.h>
 #include <math.h>
 
+#include "rac.h"
 #include "rac-types.h"
 #include "rac-str.h"
 
@@ -60,34 +61,6 @@ namespace rac::mth
     typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
     typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
 
-    f32 PI = 3.14159265358979323846f;
-    f32 SIXTH_PI = PI / 6.0f;
-    f32 FOURTH_PI = PI / 4.0f;
-    f32 THIRD_PI = PI / 3.0f;
-    f32 HALF_PI = PI / 2.0f;
-    f32 TAU = 2.0f * PI;
-    f32 INV_PI = 1.0f / PI;
-    f32 DEG2RAD = PI / 180.0f;
-    f32 RAD2DEG = 180.0f / PI;
-
-    f32 INV_U8_MAX = 1.0f / (f32)UINT8_MAX;
-    f32 INV_U16_MAX = 1.0f / (f32)UINT16_MAX;
-    f32 INV_U32_MAX = 1.0f / (f32)UINT32_MAX;
-    f32 INV_U64_MAX = 1.0f / (f32)UINT64_MAX;
-
-    u8 ABS_I8_MIN = -(INT8_MIN);
-    u16 ABS_I16_MIN = -(INT16_MIN);
-    u32 ABS_I32_MIN = -(INT32_MIN);
-    u64 ABS_I64_MIN = -(INT64_MIN);
-
-    f32 F32_EPSILON = FLT_EPSILON;
-    f32 F32_MAX = FLT_MAX;
-    f32 F32_MIN = FLT_MIN;
-
-    f32 SIGNED_F32_EPSILON = -F32_EPSILON;
-    f32 F32_ONE_EPSILON = 1.0f - F32_EPSILON;
-    f32 SIGNED_F32_ONE_EPSILON = -F32_ONE_EPSILON;
-
     #define RAC_F32_APPROX_ZERO(a) (fabsf(a) <= F32_EPSILON)
     #define RAC_F32_APPROX_ONE(a) (RAC_F32_APPROX(a, F32_ONE_EPSILON))
 
@@ -111,13 +84,13 @@ namespace rac::mth
 
     static constexpr f32 NormU8(u8 x) { return (f32)x * INV_U8_MAX; }
     static constexpr f32 NormU16(u16 x) { return (f32)x * INV_U16_MAX; }
-    static constexpr f32 NormU32(u32 x) { return (f32)x * INV_U32_MAX; }
-    static constexpr f32 NormU64(u64 x) { return (f32)x * INV_U64_MAX; }
+    static constexpr f32 NormU32(u32 x) { return (f64)x * INV_U32_MAX; }
+    static constexpr f32 NormU64(u64 x) { return (f64)x * INV_U64_MAX; }
 
     static constexpr f32 NormI8(i8 x) { return NormU8((u8)x + ABS_I8_MIN); }
-    static constexpr f32 NormI16(i8 x) { return NormU16((u8)x + ABS_I16_MIN); }
-    static constexpr f32 NormI32(i8 x) { return NormU32((u8)x + ABS_I32_MIN); }
-    static constexpr f32 NormI64(i8 x) { return NormU64((u8)x + ABS_I64_MIN); }
+    static constexpr f32 NormI16(i16 x) { return NormU16((u8)x + ABS_I16_MIN); }
+    static constexpr f32 NormI32(i32 x) { return NormU32((u8)x + ABS_I32_MIN); }
+    static constexpr f32 NormI64(i64 x) { return NormU64((u8)x + ABS_I64_MIN); }
 
     static constexpr f32 Normalize(f32 x, f32 min, f32 max)
     {

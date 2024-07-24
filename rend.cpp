@@ -8,7 +8,8 @@
 #include <glad.h>
 #include <khrplatform.h>
 
-#include "rac-clr.h"
+#include "inc/rac.h"
+#include "inc/rac-clr.h"
 #include "inc/rac-types.h"
 #include "inc/rac-logic.h"
 #include "inc/rac-mth.h"

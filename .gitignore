@@ -517,6 +517,3 @@ inc/external/SDL2-2.30.2/docs/release_checklist.md
 inc/external/SDL2-2.30.2/README-SDL.txt
 inc/external/SDL2-2.30.2/README.txt
 inc/external/SDL2-2.30.2/WhatsNew.txt
-rend.vcxproj
-rend.vcxproj
-*.vcxproj
