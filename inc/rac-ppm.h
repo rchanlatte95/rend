@@ -30,14 +30,14 @@ namespace rac::img
     typedef const PortablePixelMap* ppm_ptr;   typedef const PortablePixelMap& ppm_ref;
     typedef PortablePixelMap* mut_ppm_ptr; typedef PortablePixelMap& mut_ppm_ref;
 
-    i32 MAX_WIDTH = 1536;
-    i32 MAX_HEIGHT = 1024;
-    i32 PENULT_WIDTH = MAX_WIDTH - 1;
-    i32 PENULT_HEIGHT = MAX_HEIGHT - 1;
-    i32 PIXEL_COUNT = MAX_WIDTH * MAX_HEIGHT * sizeof(color);
+    i32 WIDTH = 1536;
+    i32 HEIGHT = 1024;
+    i32 PENULT_WIDTH = WIDTH - 1;
+    i32 PENULT_HEIGHT = HEIGHT - 1;
+    i32 PIXEL_COUNT = WIDTH * HEIGHT * sizeof(color);
     u64 PPM_HEADER_STR_CAP = 18;
     u64 PPM_HEADER_STR_LEN = PPM_HEADER_STR_CAP - 1;
-    f32 ASPECT_RATIO = (f32)MAX_WIDTH / (f32)MAX_HEIGHT;
+    f32 ASPECT_RATIO = (f32)WIDTH / (f32)HEIGHT;
     SmallStaticStr PPM_FILE_EXT = ".ppm";
 
     std::filesystem::path GetDesktopPath()
@@ -53,12 +53,15 @@ namespace rac::img
     class alignas(WIN_PAGE_SIZE) PortablePixelMap
     {
     public:
-        mut_color data[MAX_HEIGHT][MAX_WIDTH];
+        mut_color data[HEIGHT][WIDTH];
 
         PortablePixelMap() { }
-        PortablePixelMap(color init) { memset(data, init.col, PIXEL_COUNT); }
+        PortablePixelMap(color_ref init)
+        {
+            memset(data, init.GetI32(), PIXEL_COUNT);
+        }
 
-        INLINE color_ref operator() (u32 row, u32 col) const noexcept
+        INLINE mut_color_ref operator() (u32 row, u32 col) noexcept
         {
             return data[row][col];
         }
@@ -72,18 +75,16 @@ namespace rac::img
             std::string pathStr = GetDesktopPathStr() + '\\';
             pathStr = pathStr + filename;
             pathStr += PPM_FILE_EXT;
-            cstr path = pathStr.c_str();
 
             mut_FileHandle file = nullptr;
-            fopen_s(&file, path, "w");
+            fopen_s(&file, pathStr.c_str(), "w");
             if (file == nullptr) { return false; }
 
-            mut_i64 writeRes = fprintf_s(file, "P3\n%u %u\n255\n", MAX_WIDTH, MAX_HEIGHT);
+            mut_i64 writeRes = fprintf_s(file, "P3\n%u %u\n255\n", WIDTH, HEIGHT);
             f32 WIDTH_FACTOR = 255.999f / PENULT_WIDTH;
             f32 HEIGHT_FACTOR = 255.999f / PENULT_HEIGHT;
             mut_color c;
-            mut_u32 len;
-            for (int y = 0; y < MAX_HEIGHT; ++y)
+            for (int y = 0; y < HEIGHT; ++y)
             {
                 for (int x = 0; x < PENULT_WIDTH; ++x)
                 {
@@ -92,6 +93,7 @@ namespace rac::img
                     c.g = ubyte((float(y) * HEIGHT_FACTOR));
                     c.b = 0;
                     writeRes += fprintf_s(file, "%u %u %u ", c.r, c.g, c.b);
+                    //writeRes += fprintf_s(file, "%u %u %u ", ubyte(float(x) * WIDTH_FACTOR), ubyte(float(y) * HEIGHT_FACTOR), 0);
                 }
 
                 c = data[y][PENULT_WIDTH];

@@ -59,6 +59,9 @@ typedef int_fast64_t mut_Int64;    typedef uint_fast64_t mut_UInt64;
 typedef const float f32;    typedef const float& f32_ref;   typedef float mut_f32;
 typedef const double f64;   typedef const double& f64_ref;  typedef double mut_f64;
 
+typedef const int8_t* sbyte_ptr;    typedef const uint8_t* ubyte_ptr;
+typedef int8_t* mut_sbyte_ptr;      typedef uint8_t* mut_ubyte_ptr;
+
 typedef const uint8_t* utf8ptr; typedef const wchar_t* utf16ptr;
 typedef uint8_t* mut_utf8ptr;   typedef wchar_t* mut_utf16ptr;
 
@@ -74,8 +77,8 @@ typedef const uint32_t* u32ptr; typedef uint32_t* mut_u32ptr;
 typedef const int64_t* i64ptr;  typedef int64_t* mut_i64ptr;
 typedef const uint64_t* u64ptr; typedef uint64_t* mut_u64ptr;
 
-typedef const float* f32ptr;  typedef int32_t* mut_f32ptr;
-typedef const double* f64ptr; typedef uint32_t* mut_f64ptr;
+typedef const float* f32ptr;  typedef float* mut_f32ptr;
+typedef const double* f64ptr; typedef double* mut_f64ptr;
 
 #ifndef RAC_SDL_OPENGL_TYPES
 #define RAC_SDL_OPENGL_TYPES

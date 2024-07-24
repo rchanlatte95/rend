@@ -312,4 +312,6 @@ int main(int argc, char* argv[])
 	*/
 	return EXIT_SUCCESS;
 }
+
+// note, put this here because warning was annoying me delete later
 #pragma warning(disable: 4505)
