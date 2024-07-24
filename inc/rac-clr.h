@@ -26,14 +26,14 @@ namespace rac::gfx
     i32 COLOR_STRING_MAX = (BYTE_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 2;
     i32 COLOR_STRING_LEN = COLOR_STRING_MAX - 1;
 
-    i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 2) + 1;
+    i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 3) + 1;
     i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
     class Colour
     {
     public:
         union
         {
-            mut_u32 col = 0;
+            mut_u32 col;
             mut_ubyte a;
             mut_ubyte r;
             mut_ubyte g;
@@ -62,7 +62,21 @@ namespace rac::gfx
             b = (u8)_b;
             a = (u8)_a;
         }
+        Colour(f32 _r, f32 _g, f32 _b, f32 _a = 1.0f)
+        {
+            f32 ceil_ = 255.999f;
+            r = (u8)(_r * ceil_);
+            g = (u8)(_g * ceil_);
+            b = (u8)(_b * ceil_);
+            a = (u8)(_a * ceil_);
+        }
         Colour(u32 full_color) { col = full_color; }
+
+        INLINE color_ref operator=(color_ref rhs)
+        {
+            col = rhs.col;
+            return *this;
+        }
 
         INLINE string::StrRef ToStr(string::mut_StrRef str) const
         {
@@ -70,15 +84,36 @@ namespace rac::gfx
             sprintf_s(buff, COLOR_STRING_LEN, "(%u, %u, %u, %u)", r, g, b, a);
             return str = buff;
         }
-
-        INLINE string::StrRef ToPpmStr(string::mut_StrRef str) const
-        {
-            char buff[PPM_STRING_MAX] = { 0 };
-            sprintf_s(buff, PPM_STRING_LEN, "%u %u %u", r, g, b);
-            return str = buff;
-        }
     };
 
     color WHITE(MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
     color BLACK(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
+    color RED(MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
+    color GREEN(MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
+    color BLUE(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
+
+    INLINE static bool operator >(color_ref lhs, color_ref rhs)
+    {
+        return  lhs.col > rhs.col;
+    }
+    INLINE static bool operator <(color_ref lhs, color_ref rhs)
+    {
+        return lhs.col < rhs.col;
+    }
+    INLINE static bool operator >=(color_ref lhs, color_ref rhs)
+    {
+        return lhs.col >= rhs.col;
+    }
+    INLINE static bool operator <=(color_ref lhs, color_ref rhs)
+    {
+        return lhs.col <= rhs.col;
+    }
+    INLINE static bool operator ==(color_ref lhs, color_ref rhs)
+    {
+        return  lhs.col == rhs.col;
+    }
+    INLINE static bool operator !=(color_ref lhs, color_ref rhs)
+    {
+        return !(lhs == rhs);
+    }
 }

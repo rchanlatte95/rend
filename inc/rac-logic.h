@@ -53,7 +53,7 @@ namespace rac::logic
         cstr Cstr() const { return value ? "true" : "false"; }
         Int8 ToInt() const { return value ? 1 : 0; }
 
-        INLINE Bool_ref operator=(bool rhs)
+        INLINE Bool_ref operator=(const bool rhs)
         {
             value = rhs ? 1 : 0;
             return *this;

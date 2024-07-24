@@ -342,9 +342,9 @@ namespace rac::string
         return res += rhs;
     }
 
-    inline static constexpr i8 SMALL_STATIC_STR_TARGET_BYTE_SIZE = 16; // must be power of two
+    inline static constexpr i8 SMALL_STATIC_STR_TARGET_BYTE_SIZE = 16;
     inline static constexpr i8 SMALL_STATIC_STR_CAPACITY = SMALL_STATIC_STR_TARGET_BYTE_SIZE - (sizeof(u8) * 2);
-    inline static constexpr i8 SMALL_STATIC_STR_MAX_INDEX = SMALL_STATIC_STR_CAPACITY - 1;
+    inline static constexpr i8 SMALL_STATIC_STR_MAX_INDEX = SMALL_STATIC_STR_CAPACITY - 2;
     class SmallStaticStr;
     typedef const SmallStaticStr SmallStr;      typedef SmallStaticStr mut_SmallStr;
     typedef const SmallStaticStr* SmallStrPtr; typedef SmallStaticStr* mut_SmallStrPtr;

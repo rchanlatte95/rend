@@ -272,15 +272,12 @@ static i32 PollInput()
 	return 1;
 }
 
-static ppm pathTraceResult;
+static mut_ppm pathTraceResult(BLACK);
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
-	mut_color c(128);
-	mut_Str str;
-	c.ToStr(str);
-	printf("%s\r\n", str.ToCstr());
-	printf("%f", NormU8(c.r));
+	Bool writeSuccessful = pathTraceResult.ToFile("RT_RESULT");
+	printf("\r\nwriteSuccessful = %s\r\n", writeSuccessful.Cstr());
 
 	/*
 	GetFrequency();
@@ -315,3 +312,4 @@ int main(int argc, char* argv[])
 	*/
 	return EXIT_SUCCESS;
 }
+#pragma warning(disable: 4505)
