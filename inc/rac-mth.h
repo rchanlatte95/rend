@@ -35,6 +35,108 @@ namespace rac::mth
     typedef const Vector2I32* v2i_ptr;   typedef const Vector2I32& v2i_ref;
     typedef Vector2I32* mut_v2i_ptr; typedef Vector2I32& mut_v2i_ref;
 
+    class Vector2;
+    typedef const Vector2 v2;       typedef Vector2 mut_v2;
+    typedef const Vector2* v2_ptr;  typedef const Vector2& v2_ref;
+    typedef Vector2* mut_v2_ptr;    typedef Vector2& mut_v2_ref;
+
+    class Vector3;
+    typedef const Vector3 v3;       typedef Vector3 mut_v3;
+    typedef const Vector3* v3_ptr;  typedef const Vector3& v3_ref;
+    typedef Vector3* mut_v3_ptr;    typedef Vector3& mut_v3_ref;
+
+    class Vector4;
+    typedef const Vector4 v4;       typedef Vector4 mut_v4;
+    typedef const Vector4* v4_ptr;  typedef const Vector4& v4_ref;
+    typedef Vector4* mut_v4_ptr;    typedef Vector4& mut_v4_ref;
+
+    class Quaternion;
+    typedef const Quaternion quat;      typedef Quaternion mut_quat;
+    typedef const Quaternion* quat_ptr; typedef const Quaternion& quat_ref;
+    typedef Quaternion* mut_quat_ptr;   typedef Quaternion& mut_quat_ref;
+
+    class Matrix;
+    typedef const Matrix matrix;        typedef Matrix mut_matrix;
+    typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
+    typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
+
+    f32 PI = 3.14159265358979323846f;
+    f32 SIXTH_PI = PI / 6.0f;
+    f32 FOURTH_PI = PI / 4.0f;
+    f32 THIRD_PI = PI / 3.0f;
+    f32 HALF_PI = PI / 2.0f;
+    f32 TAU = 2.0f * PI;
+    f32 INV_PI = 1.0f / PI;
+    f32 DEG2RAD = PI / 180.0f;
+    f32 RAD2DEG = 180.0f / PI;
+
+    f32 INV_U8_MAX = 1.0f / (f32)UINT8_MAX;
+    f32 INV_U16_MAX = 1.0f / (f32)UINT16_MAX;
+    f32 INV_U32_MAX = 1.0f / (f32)UINT32_MAX;
+    f32 INV_U64_MAX = 1.0f / (f32)UINT64_MAX;
+
+    u8 ABS_I8_MIN = -(INT8_MIN);
+    u16 ABS_I16_MIN = -(INT16_MIN);
+    u32 ABS_I32_MIN = -(INT32_MIN);
+    u64 ABS_I64_MIN = -(INT64_MIN);
+
+    f32 F32_EPSILON = FLT_EPSILON;
+    f32 F32_MAX = FLT_MAX;
+    f32 F32_MIN = FLT_MIN;
+
+    f32 SIGNED_F32_EPSILON = -F32_EPSILON;
+    f32 F32_ONE_EPSILON = 1.0f - F32_EPSILON;
+    f32 SIGNED_F32_ONE_EPSILON = -F32_ONE_EPSILON;
+
+    #define RAC_F32_APPROX_ZERO(a) (fabsf(a) <= F32_EPSILON)
+    #define RAC_F32_APPROX_ONE(a) (RAC_F32_APPROX(a, F32_ONE_EPSILON))
+
+    #define RAC_F32_APPROX_MORE(a, b) (fabsf(a - b) > F32_EPSILON)
+    #define RAC_F32_APPROX_LESS(a, b) (fabsf(a - b) < SIGNED_F32_EPSILON)
+    #define RAC_F32_APPROX_MORE_OR_EQUAL(a, b) (fabsf(a - b) >= F32_EPSILON)
+    #define RAC_F32_APPROX_LESS_OR_EQUAL(a, b) (fabsf(a - b) <= SIGNED_F32_EPSILON)
+    #define RAC_F32_APPROX_POS(a) (a >= F32_EPSILON)
+    #define RAC_F32_APPROX_NEG(a) (a <= F32_EPSILON)
+
+    static constexpr bool Approx(f32 a, f32 b)
+    {
+        if (a == b) return true; // Avoids divisions by zero
+        if (_isnanf(a) || _isnanf(b)) return false; // Handle NaN cases
+
+        // The min here handles the INF cases
+        f32 _min = min((std::fabsf(a + b)), F32_MAX);
+        f32 norm = F32_EPSILON * _min;
+        return fabsf(a - b) < max(F32_MIN, norm);
+    }
+
+    static constexpr f32 NormU8(u8 x) { return (f32)x * INV_U8_MAX; }
+    static constexpr f32 NormU16(u16 x) { return (f32)x * INV_U16_MAX; }
+    static constexpr f32 NormU32(u32 x) { return (f32)x * INV_U32_MAX; }
+    static constexpr f32 NormU64(u64 x) { return (f32)x * INV_U64_MAX; }
+
+    static constexpr f32 NormI8(i8 x) { return NormU8((u8)x + ABS_I8_MIN); }
+    static constexpr f32 NormI16(i8 x) { return NormU16((u8)x + ABS_I16_MIN); }
+    static constexpr f32 NormI32(i8 x) { return NormU32((u8)x + ABS_I32_MIN); }
+    static constexpr f32 NormI64(i8 x) { return NormU64((u8)x + ABS_I64_MIN); }
+
+    static constexpr f32 Normalize(f32 x, f32 min, f32 max)
+    {
+        return (x - min) / (max - min);
+    }
+
+    static f32 Clamp(f32 x, f32 min, f32 max)
+    {
+        if (fabsf(x - max) > F32_EPSILON) return max;
+        if (fabsf(x - min) < F32_EPSILON) return min;
+        return x;
+    }
+    static f32 Clamp01(f32 x)
+    {
+        if (fabsf(x - F32_ONE_EPSILON) > F32_EPSILON) return 1.0f;
+        if (fabsf(x) < F32_EPSILON) return 0.0f;
+        return x;
+    }
+
     class Vector2I16
     {
     public:
@@ -142,84 +244,6 @@ namespace rac::mth
             y /= a;
         }
     };
-
-    f32 PI = 3.14159265358979323846f;
-    f32 SIXTH_PI = PI / 6.0f;
-    f32 FOURTH_PI = PI / 4.0f;
-    f32 THIRD_PI = PI / 3.0f;
-    f32 HALF_PI = PI / 2.0f;
-    f32 TAU = 2.0f * PI;
-
-    f32 INV_PI = 1.0f / PI;
-    f32 DEG2RAD = PI / 180.0f;
-    f32 RAD2DEG = 180.0f / PI;
-
-    f32 F32_EPSILON = FLT_EPSILON;
-    f32 F32_MAX = FLT_MAX;
-    f32 F32_MIN = FLT_MIN;
-
-    f32 SIGNED_F32_EPSILON = -F32_EPSILON;
-    f32 F32_ONE_EPSILON = 1.0f - F32_EPSILON;
-    f32 SIGNED_F32_ONE_EPSILON = -F32_ONE_EPSILON;
-
-    #define RAC_F32_APPROX_ZERO(a) (fabsf(a) <= F32_EPSILON)
-    #define RAC_F32_APPROX_ONE(a) (RAC_F32_APPROX(a, F32_ONE_EPSILON))
-
-    #define RAC_F32_APPROX_MORE(a, b) (fabsf(a - b) > F32_EPSILON)
-    #define RAC_F32_APPROX_LESS(a, b) (fabsf(a - b) < SIGNED_F32_EPSILON)
-    #define RAC_F32_APPROX_MORE_OR_EQUAL(a, b) (fabsf(a - b) >= F32_EPSILON)
-    #define RAC_F32_APPROX_LESS_OR_EQUAL(a, b) (fabsf(a - b) <= SIGNED_F32_EPSILON)
-    #define RAC_F32_APPROX_POS(a) (a >= F32_EPSILON)
-    #define RAC_F32_APPROX_NEG(a) (a <= F32_EPSILON)
-
-    class Vector2;
-    typedef const Vector2 v2;       typedef Vector2 mut_v2;
-    typedef const Vector2* v2_ptr;  typedef const Vector2& v2_ref;
-    typedef Vector2* mut_v2_ptr;    typedef Vector2& mut_v2_ref;
-
-    class Vector3;
-    typedef const Vector3 v3;       typedef Vector3 mut_v3;
-    typedef const Vector3* v3_ptr;  typedef const Vector3& v3_ref;
-    typedef Vector3* mut_v3_ptr;    typedef Vector3& mut_v3_ref;
-
-    class Vector4;
-    typedef const Vector4 v4;       typedef Vector4 mut_v4;
-    typedef const Vector4* v4_ptr;  typedef const Vector4& v4_ref;
-    typedef Vector4* mut_v4_ptr;    typedef Vector4& mut_v4_ref;
-
-    class Quaternion;
-    typedef const Quaternion quat;      typedef Quaternion mut_quat;
-    typedef const Quaternion* quat_ptr; typedef const Quaternion& quat_ref;
-    typedef Quaternion* mut_quat_ptr;   typedef Quaternion& mut_quat_ref;
-
-    class Matrix;
-    typedef const Matrix matrix;        typedef Matrix mut_matrix;
-    typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
-    typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
-
-    static constexpr bool Approx(f32 a, f32 b)
-    {
-        if (a == b) return true; // Avoids divisions by zero
-        if (_isnanf(a) || _isnanf(b)) return false; // Handle NaN cases
-
-        // The min here handles the INF cases
-        f32 _min = min((std::fabsf(a + b)), F32_MAX);
-        f32 norm = F32_EPSILON * _min;
-        return fabsf(a - b) < max(F32_MIN, norm);
-    }
-
-    static f32 Clamp(f32 x, f32 min, f32 max)
-    {
-        if (fabsf(x - max) > F32_EPSILON) return max;
-        if (fabsf(x - min) < F32_EPSILON) return min;
-        return x;
-    }
-    static f32 Clamp01(f32 x)
-    {
-        if (fabsf(x - F32_ONE_EPSILON) > F32_EPSILON) return 1.0f;
-        if (fabsf(x) < F32_EPSILON) return 0.0f;
-        return x;
-    }
 
     i32 V2_STRING_MAX = (F32_STR_LEN * 2) + COMMA_SPACE_LEN + PARENTHESES_LEN + 1;
     i32 V2_STRING_LEN = V2_STRING_MAX - 1;
@@ -1192,5 +1216,5 @@ namespace rac::mth
         }
     };
 
-    matrix IDENTITY(1.0f, 0.0f);
+    //matrix IDENTITY(1.0f, 0.0f);
 }

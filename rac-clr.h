@@ -22,6 +22,9 @@ namespace rac::gfx
     i32 BYTE_STR_LEN = BYTE_DIGIT_CT;
     i32 COLOR_STRING_MAX = (BYTE_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 2;
     i32 COLOR_STRING_LEN = COLOR_STRING_MAX - 1;
+
+    i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 2) + 1;
+    i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
     class Colour
     {
     public:
@@ -62,6 +65,13 @@ namespace rac::gfx
         {
             char buff[COLOR_STRING_MAX] = { 0 };
             sprintf_s(buff, COLOR_STRING_LEN, "(%u, %u, %u, %u)", r, g, b, a);
+            return str = buff;
+        }
+
+        INLINE string::StrRef ToPpmStr(string::mut_StrRef str) const
+        {
+            char buff[PPM_STRING_MAX] = { 0 };
+            sprintf_s(buff, PPM_STRING_LEN, "%u %u %u", r, g, b);
             return str = buff;
         }
     };

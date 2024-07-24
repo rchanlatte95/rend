@@ -269,77 +269,6 @@ static i32 PollInput()
 	return 1;
 }
 
-static const unsigned char BitsSetTable256[256] =
-{
-#   define B2(n) n,     n+1,     n+1,     n+2
-#   define B4(n) B2(n), B2(n+1), B2(n+1), B2(n+2)
-#   define B6(n) B4(n), B4(n+1), B4(n+1), B4(n+2)
-	B6(0), B6(1), B6(1), B6(2)
-};
-
-static inline constexpr i32 PopCt(mut_u32 v)
-{
-	return	BitsSetTable256[v & 0xff] +
-			BitsSetTable256[(v >> 8) & 0xff] +
-			BitsSetTable256[(v >> 16) & 0xff] +
-			BitsSetTable256[v >> 24];
-}
-
-using namespace std;
-
-static inline constexpr int Bsr(unsigned int k)
-{
-	int i = -1;
-	for (; k; k >>= 1, ++i) {}
-	return i;
-}
-
-static const int DeBruijnBitPos[32] =
-{
-  0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-  31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-};
-static inline constexpr int BsrDB(unsigned int v)
-{
-#pragma warning( disable : 4146) // Unsigned negation
-	return DeBruijnBitPos[((u32)((v & -v) * 0x077CB531U)) >> 27];
-#pragma warning( default : 4146)
-}
-
-static inline vector<int> ConstructSubset(const vector<int>& nums, int subsetIndex)
-{
-	const int subsetSz = PopCt(subsetIndex);
-	vector<int> currSubset(subsetSz);
-
-	for (int i = 0; i < subsetSz; subsetIndex >>= 1, ++i)
-	{
-		i32 idx = BsrDB(subsetIndex);
-		currSubset[i] = nums[idx];
-	}
-
-	return currSubset;
-}
-
-class Solution
-{
-public:
-	const vector<int> EMPTY_INT_VEC = vector<int>{};
-
-	vector<vector<int>> subsets(vector<int>& nums)
-	{
-		const int ct = (int)nums.size();
-		const int subsetCt = 1 << ct;
-		vector<vector<int>> res(subsetCt);
-
-		int currSubsetIdx = 0;
-		res[currSubsetIdx++] = EMPTY_INT_VEC;
-		for (; currSubsetIdx < subsetCt; ++currSubsetIdx)
-			res[currSubsetIdx] = ConstructSubset(nums, currSubsetIdx);
-
-		return res;
-	}
-};
-
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
@@ -347,7 +276,8 @@ int main(int argc, char* argv[])
 	mut_color c(128);
 	mut_Str str;
 	c.ToStr(str);
-	printf("%s", str.ToCstr());
+	printf("%s\r\n", str.ToCstr());
+	printf("%f", NormU8(c.r));
 
 	/*
 	GetFrequency();
