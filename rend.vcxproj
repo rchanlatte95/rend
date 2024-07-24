@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Ryan\Desktop\dev\rend\inc;$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\Ryan\Desktop\dev\rend\inc\external\SDL2-2.30.2;C:\Users\Ryan\Desktop\dev\rend\inc\external\GLAD;C:\Users\Ryan\Desktop\dev\rend\inc\external;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>C:\Users\Ryan\Desktop\dev\rend\inc\external\GLAD;C:\Users\Ryan\Desktop\dev\rend\inc\external\SDL2-2.30.2\lib\x64;C:\Users\Ryan\Desktop\dev\rend\inc\external\libs;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc;$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <ExternalIncludePath>C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\GLAD;C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external;C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\SDL2-2.30.2;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\SDL2-2.30.2\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +142,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>C:\Users\Ryan\Desktop\dev\rend\inc\external\SDL2-2.30.2\lib\x64\SDL2.lib;C:\Users\Ryan\Desktop\dev\rend\inc\external\SDL2-2.30.2\lib\x64\SDL2main.lib;C:\Users\Ryan\Desktop\dev\rend\inc\external\libs\OpenGL32.Lib;C:\Users\Ryan\Desktop\dev\rend\inc\external\libs\GlU32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\SDL2-2.30.2\lib\x64\SDL2.lib;C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\SDL2-2.30.2\lib\x64\SDL2main.lib;C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\OpenGL-Portable\OpenGL32.Lib;C:\Users\Ryan Chanlatte\Desktop\_Git\_pako\rend\inc\external\OpenGL-Portable\GlU32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,17 +185,19 @@
     <ClCompile Include="rend.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\rac-clr.h" />
     <ClInclude Include="inc\rac-gl.h" />
     <ClInclude Include="inc\rac-io.h" />
     <ClInclude Include="inc\rac-logic.h" />
     <ClInclude Include="inc\rac-mth.h" />
+    <ClInclude Include="inc\rac-ppm.h" />
     <ClInclude Include="inc\rac-priorityqueue.h" />
     <ClInclude Include="inc\rac-queue.h" />
     <ClInclude Include="inc\rac-shdr.h" />
     <ClInclude Include="inc\rac-stack.h" />
     <ClInclude Include="inc\rac-str.h" />
     <ClInclude Include="inc\rac-types.h" />
-    <ClInclude Include="rac-clr.h" />
+    <ClInclude Include="inc\rac.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hello-tri.glsl" />

@@ -17,6 +17,9 @@ namespace rac::gfx
     typedef const Colour* color_ptr;   typedef const Colour& color_ref;
     typedef Colour* mut_color_ptr; typedef Colour& mut_color_ref;
 
+    u8 MAX_COLOR_COMPONENT_VALUE = 255;
+    u8 MIN_COLOR_COMPONENT_VALUE = 0;
+
     #define BYTE_DIGIT_CT 3
     i32 BYTE_STR_MAX = BYTE_DIGIT_CT + 1;
     i32 BYTE_STR_LEN = BYTE_DIGIT_CT;
@@ -75,4 +78,7 @@ namespace rac::gfx
             return str = buff;
         }
     };
+
+    color WHITE(MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
+    color BLACK(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
 }

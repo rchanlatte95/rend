@@ -1,4 +1,7 @@
 #pragma once
+
+#include <stdlib.h>
+#include <filesystem>
 #include "rac-types.h"
 #include "rac-logic.h"
 
@@ -57,6 +60,13 @@ namespace rac::string
             len = (i32)strnlen_s(_str, STATIC_STR_CAPACITY);
             memcpy_s(chars, STATIC_STR_CAPACITY, _str, len);
         }
+        StaticStr(wstr _str)
+        {
+            const size_t cap = STATIC_STR_CAPACITY;
+            size_t tmp_len = 0;
+            wcstombs_s(&tmp_len, (char*)chars, cap, _str, cap);
+            len = (i32)tmp_len;
+        }
         StaticStr(cstr _str, u32 char_ct, u32 startIndex = 0)
         {
             i32 ct = char_ct > STATIC_STR_CAPACITY ? STATIC_STR_CAPACITY : char_ct;
@@ -102,10 +112,20 @@ namespace rac::string
             memcpy_s(chars, STATIC_STR_CAPACITY, rhs, len);
             return *this;
         }
+        INLINE StrRef operator=(wstr rhs)
+        {
+            const size_t cap = STATIC_STR_CAPACITY;
+            size_t tmp_len = 0;
+            wcstombs_s(&tmp_len, (char*)chars, cap, rhs, cap);
+            len = (i32)tmp_len;
+            return *this;
+        }
         INLINE StrRef operator=(StrRef rhs)
         {
             if (*this == rhs)
+            {
                 return *this;
+            }
 
             len = rhs.len;
             memcpy_s(chars, len, rhs.chars, len);
@@ -114,20 +134,52 @@ namespace rac::string
 
         INLINE StrRef operator+=(cstr rhs)
         {
+            if (len == STATIC_STR_CAPACITY)
+            {
+                return *this;
+            }
+
             i32 rhs_len = (i32)strnlen_s(rhs, STATIC_STR_CAPACITY);
             i32 new_len = len + rhs_len;
-            if (len == STATIC_STR_CAPACITY || new_len >= STATIC_STR_CAPACITY)
+            if (new_len >= STATIC_STR_CAPACITY)
+            {
                 return *this;
+            }
 
             memcpy_s(chars + len, new_len, rhs, rhs_len);
             len = new_len;
             return *this;
         }
+        INLINE StrRef operator+=(wstr rhs)
+        {
+            const size_t cap = STATIC_STR_CAPACITY;
+
+            if (len == cap)
+            {
+                return *this;
+            }
+
+            char tmp[STATIC_STR_TARGET_BYTE_SIZE];
+            size_t tmp_len = 0;
+            wcstombs_s(&tmp_len, (char*)tmp, cap, rhs, cap);
+
+            i32 new_len = len + tmp_len;
+            if (new_len >= cap)
+            {
+                return *this;
+            }
+
+            memcpy_s(chars + len, new_len, tmp, tmp_len);
+            len = new_len;
+
+            return *this;
+        }
         INLINE StrRef operator+=(StrRef rhs)
         {
+            if (len == STATIC_STR_CAPACITY) { return *this; }
+
             i32 new_len = len + rhs.len;
-            if (len == STATIC_STR_CAPACITY || new_len >= STATIC_STR_CAPACITY)
-                return *this;
+            if (new_len >= STATIC_STR_CAPACITY) { return *this; }
 
             memcpy_s(chars + len, new_len, rhs.chars, rhs.len);
             len = new_len;
@@ -135,7 +187,7 @@ namespace rac::string
         }
         INLINE StrRef operator+=(u8 c)
         {
-            if (len == STATIC_STR_CAPACITY) return *this;
+            if (len == STATIC_STR_CAPACITY) { return *this; }
             chars[len++] = c;
             return *this;
         }
@@ -277,14 +329,17 @@ namespace rac::string
     INLINE static Str operator +(StrRef lhs, StrRef rhs)
     {
         mut_Str res(lhs);
-        res += rhs;
-        return res;
+        return res += rhs;
     }
     INLINE static Str operator +(cstr lhs, StrRef rhs)
     {
         mut_Str res(lhs);
-        res += rhs;
-        return res;
+        return res += rhs;
+    }
+    INLINE static Str operator +(wstr lhs, StrRef rhs)
+    {
+        mut_Str res(lhs);
+        return res += rhs;
     }
 
     inline static constexpr i8 SMALL_STATIC_STR_TARGET_BYTE_SIZE = 16; // must be power of two

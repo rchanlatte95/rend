@@ -62,6 +62,9 @@
     <ClInclude Include="inc\rac-clr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\rac-ppm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="hello-tri.glsl" />

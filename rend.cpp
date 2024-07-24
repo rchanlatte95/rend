@@ -16,6 +16,7 @@
 #include "inc/rac-gl.h"
 #include "inc/rac-stack.h"
 #include "inc/rac-queue.h"
+#include "inc/rac-ppm.h"
 
 #ifdef NDEBUG
 #define RELEASE true
@@ -31,6 +32,7 @@ using namespace rac::string;
 using namespace rac::logic;
 using namespace rac::static_collections;
 using namespace rac::gfx;
+using namespace rac::img;
 
 #pragma warning(pop)
 
@@ -270,10 +272,10 @@ static i32 PollInput()
 	return 1;
 }
 
+static ppm pathTraceResult;
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
-
 	mut_color c(128);
 	mut_Str str;
 	c.ToStr(str);
