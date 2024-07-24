@@ -1170,7 +1170,7 @@ namespace rac::mth
         {
             return v4(r0c0, r1c1, r2c2, r3c3);
         }
-        INLINE v4 GetInvDiagonal() const noexcept
+        INLINE v4 GetAntiDiagonal() const noexcept
         {
             return v4(r3c0, r2c1, r1c2, r0c3);
         }

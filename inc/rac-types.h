@@ -20,6 +20,8 @@
 
 typedef const void* ptr;	typedef void* mut_ptr;
 
+typedef const FILE* FileHandle;
+
 typedef const char* cstr;		typedef char* mut_cstr;
 typedef const char** cstrptr;	typedef char** mut_cstrptr;
 
