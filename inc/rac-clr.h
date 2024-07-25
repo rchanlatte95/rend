@@ -17,6 +17,13 @@ namespace rac::gfx
     typedef const RAC_Color* color_ptr; typedef const RAC_Color& color_ref;
     typedef RAC_Color* mut_color_ptr;   typedef RAC_Color& mut_color_ref;
 
+    // these factors are grabbed from: https://en.wikipedia.org/wiki/Luma_(video)
+    // under the section: Rec. 601 luma versus Rec. 709 luma coefficients
+    // I am assuming most monitors in circulation are digital HD monitors.
+    #define LUMA_REC709_R 0.2126f
+    #define LUMA_REC709_G 0.7152f
+    #define LUMA_REC709_B 0.0722f
+
     u8 MAX_COLOR_COMPONENT_VALUE = 255;
     u8 MIN_COLOR_COMPONENT_VALUE = 0;
 
@@ -27,6 +34,8 @@ namespace rac::gfx
     i32 COLOR_STRING_LEN = COLOR_STRING_MAX - 1;
     i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 3) + 1;
     i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
+    f32 GAMMA = 2.2222222f;
+    f32 INV_GAMMA = 1.0f / GAMMA;
     class alignas(4) RAC_Color
     {
     public:
@@ -69,6 +78,29 @@ namespace rac::gfx
 
         INLINE u32 GetU32() const noexcept { return *(u32ptr(&opacity)); }
         INLINE i32 GetI32() const noexcept { return *(i32ptr(&opacity)); }
+
+        INLINE f32 LinearToGamma(f32 linear_color_component) const noexcept
+        {
+            return powf(NormU8(linear_color_component), INV_GAMMA);
+        }
+
+        INLINE f32 GammaToLinear(f32 gamma_color_component) const noexcept
+        {
+            return powf(NormU8(gamma_color_component), GAMMA);
+        }
+
+        INLINE color Luminance() const noexcept
+        {
+            f32 ceil_ = 255.999f;
+
+            f32 rY = LUMA_REC709_R * LinearToGamma(r);
+            f32 gY = LUMA_REC709_G * LinearToGamma(g);
+            f32 bY = LUMA_REC709_B * LinearToGamma(b);
+            return color((u8)(rY * ceil_),
+                        (u8)(gY * ceil_),
+                        (u8)(bY * ceil_),
+                        opacity);
+        }
 
         operator u32() const noexcept { return GetU32(); }
         operator i32() const noexcept { return GetI32(); }
