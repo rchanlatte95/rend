@@ -12,6 +12,8 @@
 
 namespace rac::gfx
 {
+    using namespace rac::mth;
+
     class RAC_Color;
     typedef const RAC_Color color;      typedef RAC_Color mut_color;
     typedef const RAC_Color* color_ptr; typedef const RAC_Color& color_ref;

@@ -517,7 +517,6 @@ namespace rac::mth
             y = (mut_f32)_y;
             z = (mut_f32)_z;
         }
-
         Vector3(f32 _a)
         {
             x = _a;
@@ -556,8 +555,12 @@ namespace rac::mth
             z = rhs.z;
             return *this;
         }
-        INLINE v3 operator -() const { return v3(-x, -y, -z); }
-        INLINE v3 operator *(f32 v) { return v3(x * v, y * v, z * v); }
+        INLINE v3 operator -() const noexcept { return v3(-x, -y, -z); }
+        INLINE v3 operator -(v3_ref rhs) const noexcept
+        {
+            return v3(x - rhs.x, y - rhs.y, z - rhs.z);
+        }
+        INLINE v3 operator *(f32 v) const noexcept { return v3(x * v, y * v, z * v); }
         INLINE v3 operator /(f32 v)
         {
             f32 inv = 1.0f / v;
@@ -621,21 +624,21 @@ namespace rac::mth
         }
         INLINE v3 Clamp(f32 min, f32 max)
         {
-            return v3(x > max ? max : (x < min ? min : x),
-                y > max ? max : (y < min ? min : y),
-                z > max ? max : (z < min ? min : z));
+            return v3(  x > max ? max : (x < min ? min : x),
+                        y > max ? max : (y < min ? min : y),
+                        z > max ? max : (z < min ? min : z));
         }
         INLINE v3 Clamp(f32 x_min, f32 x_max, f32 y_min, f32 y_max, f32 z_min, f32 z_max)
         {
-            return v3(x > x_max ? x_max : (x < x_min ? x_min : x),
-                y > y_max ? y_max : (y < y_min ? y_min : y),
-                z > z_max ? z_max : (z < z_min ? z_min : z));
+            return v3(  x > x_max ? x_max : (x < x_min ? x_min : x),
+                        y > y_max ? y_max : (y < y_min ? y_min : y),
+                        z > z_max ? z_max : (z < z_min ? z_min : z));
         }
         INLINE v3 Clamp(v3 min, v3 max)
         {
-            return v3(x > max.x ? max.x : (x < min.x ? min.x : x),
-                y > max.y ? max.y : (y < min.y ? min.y : y),
-                z > max.z ? max.z : (z < min.z ? min.z : z));
+            return v3(  x > max.x ? max.x : (x < min.x ? min.x : x),
+                        y > max.y ? max.y : (y < min.y ? min.y : y),
+                        z > max.z ? max.z : (z < min.z ? min.z : z));
         }
         INLINE v3 Inv() const
         {
@@ -698,7 +701,7 @@ namespace rac::mth
         INLINE v3 Reflect(v3_ref normal)
         {
             v3 t = *this;
-            return t - DblDot(normal) * normal;
+            return t - normal * DblDot(normal);
         }
     };
 
@@ -1228,14 +1231,14 @@ namespace rac::mth
     };
     //matrix IDENTITY(1.0f, 0.0f);
 
-    class ray
+    class Ray
     {
     public:
         mut_v3 origin;
         mut_v3 dir;
 
-        ray() { }
-        ray(v3_ref _origin, v3_ref direction) : origin(_origin), dir(direction) { }
+        Ray() { }
+        Ray(v3_ref _origin, v3_ref direction) : origin(_origin), dir(direction) { }
 
         INLINE v3 At(f32 t) const noexcept
         {
