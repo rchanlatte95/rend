@@ -657,11 +657,15 @@ namespace rac::mth
         {
             return x * v.x + y * v.y + z * v.z;
         }
+        INLINE f32 DblDot(v3_ref v) const
+        {
+            return 2.0f * (x * v.x + y * v.y + z * v.z);
+        }
         INLINE f32 Dist(v3_ref from) const
         {
             return sqrtf((x - from.x) * (x - from.x) +
-                        (y * from.y) * (y * from.y) +
-                        (z * from.z) * (z * from.z));
+                        (y - from.y) * (y - from.y) +
+                        (z - from.z) * (z - from.z));
         }
         INLINE f32 SqrDist(v3_ref from) const
         {
@@ -690,24 +694,36 @@ namespace rac::mth
         // Cross product with unit X Vector3
         // Unit Z == v3(0.0f, 0.0f, 1.0f)
         INLINE v3 CrossZ() { return v3(y, -x, 0.0f); }
+
+        INLINE v3 Reflect(v3_ref normal)
+        {
+            v3 t = *this;
+            return t - DblDot(normal) * normal;
+        }
     };
 
     /// <summary>
     ///
+    /// Fused multiply add applied to 3 vector3's
+    ///
     /// </summary>
-    /// <param name="_x"></param>
-    /// <param name="_y"></param>
-    /// <param name="_z"></param>
     ///
     /// <returns>
     ///
-    /// x * y + z
+    /// multiplier * multiplicand + addend
     ///
     /// </returns>
-    INLINE v3 fma(v3_ref _x, v3_ref _y, v3_ref _z)
+    INLINE v3 fma(v3_ref multiplier, v3_ref multiplicand, v3_ref addend)
     {
-        //std::fmaf(t, dir, orig);
-        //return v3(std::fmaf(_x.x, ));
+        return v3(std::fmaf(multiplier.x, multiplicand.x, addend.x),
+                std::fmaf(multiplier.y, multiplicand.y, addend.y),
+                std::fmaf(multiplier.z, multiplicand.z, addend.z));
+    }
+    INLINE v3 fma(v3_ref multiplier, v3_ref multiplicand, f32 addend)
+    {
+        return v3(std::fmaf(multiplier.x, multiplicand.x, addend),
+                std::fmaf(multiplier.y, multiplicand.y, addend),
+                std::fmaf(multiplier.z, multiplicand.z, addend));
     }
 
     INLINE static bool operator >(v3_ref lhs, v3_ref rhs) noexcept
@@ -1215,13 +1231,15 @@ namespace rac::mth
     class ray
     {
     public:
-        mut_v3 orig;
+        mut_v3 origin;
         mut_v3 dir;
 
         ray() { }
-        ray(v3_ref origin, v3_ref direction) : orig(origin), dir(direction) { }
+        ray(v3_ref _origin, v3_ref direction) : origin(_origin), dir(direction) { }
 
-        //v3 at(f32 t) const noexcept { return orig + t * dir; }
-        INLINE v3 At(f32 t) const noexcept { return std::fmaf(t, dir, orig); }
+        INLINE v3 At(f32 t) const noexcept
+        {
+            return fma(origin, dir, t);
+        }
     };
 }
