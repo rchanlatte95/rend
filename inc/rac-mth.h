@@ -692,6 +692,24 @@ namespace rac::mth
         INLINE v3 CrossZ() { return v3(y, -x, 0.0f); }
     };
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="_x"></param>
+    /// <param name="_y"></param>
+    /// <param name="_z"></param>
+    ///
+    /// <returns>
+    ///
+    /// x * y + z
+    ///
+    /// </returns>
+    INLINE v3 fma(v3_ref _x, v3_ref _y, v3_ref _z)
+    {
+        //std::fmaf(t, dir, orig);
+        //return v3(std::fmaf(_x.x, ));
+    }
+
     INLINE static bool operator >(v3_ref lhs, v3_ref rhs) noexcept
     {
         return  lhs.x > rhs.x && lhs.y > rhs.y && lhs.z > rhs.z;
@@ -1194,5 +1212,16 @@ namespace rac::mth
     };
     //matrix IDENTITY(1.0f, 0.0f);
 
+    class ray
+    {
+    public:
+        mut_v3 orig;
+        mut_v3 dir;
 
+        ray() { }
+        ray(v3_ref origin, v3_ref direction) : orig(origin), dir(direction) { }
+
+        //v3 at(f32 t) const noexcept { return orig + t * dir; }
+        INLINE v3 At(f32 t) const noexcept { return std::fmaf(t, dir, orig); }
+    };
 }
