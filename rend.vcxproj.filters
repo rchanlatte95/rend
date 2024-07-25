@@ -29,9 +29,6 @@
     <ClInclude Include="inc\rac-gl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\rac-io.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\rac-logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\rac-ppm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\rac-io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

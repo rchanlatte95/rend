@@ -61,6 +61,10 @@ namespace rac::mth
     typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
     typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
 
+    class mut_ray;                  typedef const mut_ray ray;
+    typedef const mut_ray* ray_ptr; typedef const mut_ray& ray_ref;
+    typedef mut_ray* mut_ray_ptr;   typedef mut_ray& mut_ray_ref;
+
     #define RAC_F32_APPROX_ZERO(a) (fabsf(a) <= F32_EPSILON)
     #define RAC_F32_APPROX_ONE(a) (RAC_F32_APPROX(a, F32_ONE_EPSILON))
 
@@ -110,7 +114,7 @@ namespace rac::mth
         return x;
     }
 
-    class Vector2I16
+    class alignas(4) Vector2I16
     {
     public:
         mut_i16 x = 0;
@@ -164,7 +168,7 @@ namespace rac::mth
         }
     };
 
-    class Vector2I32
+    class alignas(8) Vector2I32
     {
     public:
         mut_i32 x = 0;
@@ -1188,6 +1192,7 @@ namespace rac::mth
             return 0.0f;
         }
     };
-
     //matrix IDENTITY(1.0f, 0.0f);
+
+
 }

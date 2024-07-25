@@ -34,7 +34,7 @@ namespace rac::gfx
         mut_ubyte b;
         mut_ubyte g;
         mut_ubyte r;
-        mut_ubyte a;
+        mut_ubyte opacity;
 
         RAC_Color() { }
         RAC_Color(u8 _r, u8 _g, u8 _b, u8 _a = 255)
@@ -42,21 +42,21 @@ namespace rac::gfx
             r = _r;
             g = _g;
             b = _b;
-            a = _a;
+            opacity = _a;
         }
         RAC_Color(u16 _r, u16 _g, u16 _b, u16 _a = 255)
         {
             r = (u8)_r;
             g = (u8)_g;
             b = (u8)_b;
-            a = (u8)_a;
+            opacity = (u8)_a;
         }
         RAC_Color(u32 _r, u32 _g, u32 _b, u32 _a = 255)
         {
             r = (u8)_r;
             g = (u8)_g;
             b = (u8)_b;
-            a = (u8)_a;
+            opacity = (u8)_a;
         }
         RAC_Color(f32 _r, f32 _g, f32 _b, f32 _a = 1.0f)
         {
@@ -64,25 +64,28 @@ namespace rac::gfx
             r = (u8)(_r * ceil_);
             g = (u8)(_g * ceil_);
             b = (u8)(_b * ceil_);
-            a = (u8)(_a * ceil_);
+            opacity = (u8)(_a * ceil_);
         }
 
-        INLINE u32 GetU32() const noexcept { return *(u32ptr(&a)); }
-        INLINE i32 GetI32() const noexcept { return *(i32ptr(&a)); }
+        INLINE u32 GetU32() const noexcept { return *(u32ptr(&opacity)); }
+        INLINE i32 GetI32() const noexcept { return *(i32ptr(&opacity)); }
+
+        operator u32() const noexcept { return GetU32(); }
+        operator i32() const noexcept { return GetI32(); }
 
         INLINE color_ref operator=(color_ref rhs)
         {
             b = rhs.b;
             g = rhs.g;
             r = rhs.r;
-            a = rhs.a;
+            opacity = rhs.opacity;
             return *this;
         }
 
         INLINE string::StrRef ToStr(string::mut_StrRef str) const
         {
             char buff[COLOR_STRING_MAX] = { 0 };
-            sprintf_s(buff, COLOR_STRING_LEN, "(%u, %u, %u, %u)", r, g, b, a);
+            sprintf_s(buff, COLOR_STRING_LEN, "(%u, %u, %u, %u)", r, g, b, opacity);
             return str = buff;
         }
     };
