@@ -14,10 +14,9 @@ namespace rac::gfx
 {
     using namespace rac::mth;
 
-    class RAC_Color;
-    typedef const RAC_Color color;      typedef RAC_Color mut_color;
-    typedef const RAC_Color* color_ptr; typedef const RAC_Color& color_ref;
-    typedef RAC_Color* mut_color_ptr;   typedef RAC_Color& mut_color_ref;
+    class mut_color;                    typedef const mut_color color;
+    typedef const mut_color* color_ptr; typedef const mut_color& color_ref;
+    typedef mut_color* mut_color_ptr;   typedef mut_color& mut_color_ref;
 
     // these factors are grabbed from: https://en.wikipedia.org/wiki/Luma_(video)
     // under the section: Rec. 601 luma versus Rec. 709 luma coefficients
@@ -38,7 +37,7 @@ namespace rac::gfx
     i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
     f32 GAMMA = 2.2222222f;
     f32 INV_GAMMA = 1.0f / GAMMA;
-    class alignas(4) RAC_Color
+    class alignas(4) mut_color
     {
     public:
 
@@ -47,29 +46,15 @@ namespace rac::gfx
         mut_ubyte r;
         mut_ubyte opacity;
 
-        RAC_Color() { }
-        RAC_Color(u8 _r, u8 _g, u8 _b, u8 _a = 255)
+        mut_color() { }
+        mut_color(u8 _r, u8 _g, u8 _b, u8 _a = 255)
         {
             r = _r;
             g = _g;
             b = _b;
             opacity = _a;
         }
-        RAC_Color(u16 _r, u16 _g, u16 _b, u16 _a = 255)
-        {
-            r = (u8)_r;
-            g = (u8)_g;
-            b = (u8)_b;
-            opacity = (u8)_a;
-        }
-        RAC_Color(u32 _r, u32 _g, u32 _b, u32 _a = 255)
-        {
-            r = (u8)_r;
-            g = (u8)_g;
-            b = (u8)_b;
-            opacity = (u8)_a;
-        }
-        RAC_Color(f32 _r, f32 _g, f32 _b, f32 _a = 1.0f)
+        mut_color(f32 _r, f32 _g, f32 _b, f32 _a = 1.0f)
         {
             f32 ceil_ = 255.999f;
             r = (u8)(_r * ceil_);
@@ -153,5 +138,30 @@ namespace rac::gfx
     INLINE static bool operator !=(color_ref lhs, color_ref rhs)
     {
         return !(lhs == rhs);
+    }
+
+    INLINE static color operator *(f32 factor, color_ref rhs)
+    {
+        f32 r_f = (f32)rhs.r * factor;
+        f32 g_f = (f32)rhs.g * factor;
+        f32 b_f = (f32)rhs.b * factor;
+        f32 a_f = (f32)rhs.opacity * factor;
+        return color(r_f, g_f, b_f, a_f);
+    }
+    INLINE static color operator +(color_ref lhs, color_ref rhs)
+    {
+        u8 new_r = lhs.r + rhs.r;
+        u8 new_g = lhs.g + rhs.g;
+        u8 new_b = lhs.b + rhs.b;
+        u8 new_opacity = lhs.opacity + rhs.opacity;
+        return color(new_r, new_g, new_b, new_opacity);
+    }
+
+    static INLINE color RayColor(ray_ref r)
+    {
+        v3 dir = r.dir;
+        f32 a = 0.5f * (dir.y + 1.0f);
+        f32 b = 1.0f - a;
+        return b * color((u8)255, 255, 255) + a * color((u8)128, 178, 255);
     }
 }

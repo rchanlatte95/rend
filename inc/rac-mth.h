@@ -7,6 +7,7 @@
 #include "rac.h"
 #include "rac-types.h"
 #include "rac-str.h"
+#include "rac-clr.h"
 
 #pragma warning(pop)
 
@@ -61,7 +62,7 @@ namespace rac::mth
     typedef const Matrix* matrix_ptr;   typedef const Matrix& matrix_ref;
     typedef Matrix* mut_matrix_ptr;     typedef Matrix& mut_matrix_ref;
 
-    class mut_ray;                  typedef const mut_ray ray;
+    class mut_ray; typedef const mut_ray ray;
     typedef const mut_ray* ray_ptr; typedef const mut_ray& ray_ref;
     typedef mut_ray* mut_ray_ptr;   typedef mut_ray& mut_ray_ref;
 
@@ -556,10 +557,6 @@ namespace rac::mth
             return *this;
         }
         INLINE v3 operator -() const noexcept { return v3(-x, -y, -z); }
-        INLINE v3 operator -(v3_ref rhs) const noexcept
-        {
-            return v3(x - rhs.x, y - rhs.y, z - rhs.z);
-        }
         INLINE v3 operator *(f32 v) const noexcept { return v3(x * v, y * v, z * v); }
         INLINE v3 operator /(f32 v)
         {
@@ -660,10 +657,9 @@ namespace rac::mth
         {
             return x * v.x + y * v.y + z * v.z;
         }
-        INLINE f32 DblDot(v3_ref v) const
-        {
-            return 2.0f * (x * v.x + y * v.y + z * v.z);
-        }
+        INLINE f32 DblDot(v3_ref v)  const noexcept { return 2.0f * Dot(v); }
+        INLINE f32 Dot() const noexcept { return Dot(*this); }
+        INLINE f32 DblDot() const noexcept { return 2.0f * Dot(*this); }
         INLINE f32 Dist(v3_ref from) const
         {
             return sqrtf((x - from.x) * (x - from.x) +
@@ -697,12 +693,6 @@ namespace rac::mth
         // Cross product with unit X Vector3
         // Unit Z == v3(0.0f, 0.0f, 1.0f)
         INLINE v3 CrossZ() { return v3(y, -x, 0.0f); }
-
-        INLINE v3 Reflect(v3_ref normal)
-        {
-            v3 t = *this;
-            return t - normal * DblDot(normal);
-        }
     };
 
     /// <summary>
@@ -769,6 +759,12 @@ namespace rac::mth
     INLINE static v3 operator /(v3_ref lhs, v3_ref rhs)  noexcept
     {
         return v3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
+    }
+
+    INLINE v3 Reflect(v3_ref incident, v3_ref normal)
+    {
+        f32 dblDot = normal.DblDot();
+        return incident - normal * dblDot;
     }
 
     // Check if two vectors are approximately equal
@@ -1229,20 +1225,16 @@ namespace rac::mth
             return 0.0f;
         }
     };
-    //matrix IDENTITY(1.0f, 0.0f);
 
-    class Ray
+    class mut_ray
     {
     public:
         mut_v3 origin;
         mut_v3 dir;
 
-        Ray() { }
-        Ray(v3_ref _origin, v3_ref direction) : origin(_origin), dir(direction) { }
+        mut_ray() { }
+        mut_ray(v3_ref _origin, v3_ref direction) : origin(_origin), dir(direction) { }
 
-        INLINE v3 At(f32 t) const noexcept
-        {
-            return fma(origin, dir, t);
-        }
+        INLINE v3 At(f32 t) const noexcept { return fma(origin, dir, t); }
     };
 }
