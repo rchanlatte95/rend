@@ -40,38 +40,31 @@ namespace rac::img
     i32 PIXEL_BYTE_CT = PIXEL_CT * sizeof(color);
     u64 PPM_HEADER_STR_CAP = 18;
     u64 PPM_HEADER_STR_LEN = PPM_HEADER_STR_CAP - 1;
-    f32 ASPECT_RATIO = (f32)WIDTH / (f32)HEIGHT;
+    f32 PPM_ASPECT_RATIO = (f32)WIDTH / (f32)HEIGHT;
     f32 INV_PIXEL_CT = 1.0f / (float)PIXEL_CT;
     SmallStaticStr PPM_FILE_EXT = ".ppm";
-
-    std::filesystem::path GetDesktopPath()
-    {
-        mut_wstr p;
-        if (S_OK != SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &p)) return "";
-        std::filesystem::path result = p;
-        CoTaskMemFree(p);
-        return result;
-    }
-    std::string GetDesktopPathStr() { return GetDesktopPath().string(); }
 
     class alignas(WIN_PAGE_SIZE) PortablePixelMap
     {
     public:
-        mut_color data[HEIGHT][WIDTH];
+        mut_color pixels[HEIGHT][WIDTH];
 
         PortablePixelMap() { }
-        PortablePixelMap(color_ref init) { memset(data, (i32)init, PIXEL_BYTE_CT); }
+        //PortablePixelMap(color_ref init) { memset(pixels, (i32)init, PIXEL_BYTE_CT); }
+        PortablePixelMap(color_ref init) { memset(pixels, (i32)init, sizeof(pixels)); }
 
+        INLINE ptr ToPtr() const noexcept { return (ptr)pixels; }
+        INLINE color_ptr ToColorPtr() const noexcept { return (color_ptr)pixels; }
         INLINE mut_color_ref operator() (u32 row, u32 col) noexcept
         {
-            return data[row][col];
+            return pixels[row][col];
         }
         INLINE color_ref operator[] (u32 idx) const noexcept
         {
-            return *(&(data[0][0]) + idx);
+            return *(&(pixels[0][0]) + idx);
         }
 
-        MAY_INLINE bool ToFile(cstr filename) const
+        MAY_INLINE bool DBG_ToFile(cstr filename) const
         {
             std::string pathStr = GetDesktopPathStr() + '\\';
             pathStr = pathStr + filename;
@@ -84,29 +77,58 @@ namespace rac::img
             mut_i64 writeRes = fprintf_s(file, "P3\n%u %u\n255\n", WIDTH, HEIGHT);
             f32 WIDTH_FACTOR = 255.999f / PENULT_WIDTH;
             f32 HEIGHT_FACTOR = 255.999f / PENULT_HEIGHT;
-            mut_color c;
+            mut_color_ptr c = (mut_color_ptr)(pixels - 1);
             mut_i32 pixels_done = 0;
             mut_f32 pct_done = (pixels_done * INV_PIXEL_CT) * 100.0f;
             for (int y = 0; y < HEIGHT; ++y)
             {
+                ++c;
                 for (int x = 0; x < PENULT_WIDTH; ++x)
                 {
-                    c = data[y][x];
-                    c.r = ubyte((float(x) * WIDTH_FACTOR));
-                    c.g = ubyte((float(y) * HEIGHT_FACTOR));
-                    c.b = 0;
-                    writeRes += fprintf_s(file, "%u %u %u ", c.r, c.g, c.b);
+                    c->r = ubyte((float(x) * WIDTH_FACTOR));
+                    c->g = ubyte((float(y) * HEIGHT_FACTOR));
+                    c->b = 0;
+                    writeRes += fprintf_s(file, "%u %u %u ", c->r, c->g, c->b);
                 }
-
-                c = data[y][PENULT_WIDTH];
-                c.r = ubyte((float(PENULT_WIDTH) * WIDTH_FACTOR));
-                c.g = ubyte((float(y) * HEIGHT_FACTOR));
-                c.b = 0;
-                writeRes += fprintf_s(file, "%u %u %u\n", c.r, c.g, c.b);
+                c->r = ubyte((float(PENULT_WIDTH) * WIDTH_FACTOR));
+                c->g = ubyte((float(y) * HEIGHT_FACTOR));
+                c->b = 0;
+                writeRes += fprintf_s(file, "%u %u %u\n", c->r, c->g, c->b);
 
                 pixels_done += WIDTH;
                 pct_done = (pixels_done * INV_PIXEL_CT) * 100.0f;
-                //std::this_thread::sleep_for(std::chrono::milliseconds(8));
+                Console::ClearLine();
+                printf("%f%% -> %d Pixels done out of %d", pct_done, pixels_done, PIXEL_CT);
+            }
+            i32 closeResult = fclose(file);
+            return closeResult >= 0 && writeRes >= 0;
+        }
+
+        MAY_INLINE bool ToFile(cstr filename) const
+        {
+            std::string pathStr = io::GetDesktopPathStr() + '\\';
+            pathStr = pathStr + filename;
+            pathStr += PPM_FILE_EXT;
+
+            mut_FileHandle file = nullptr;
+            fopen_s(&file, pathStr.c_str(), "w");
+            if (file == nullptr) { return false; }
+
+            mut_i64 writeRes = fprintf_s(file, "P3\n%u %u\n255\n", WIDTH, HEIGHT);
+            mut_color_ptr c = (mut_color_ptr)(pixels - 1);
+            mut_i32 pixels_done = 0;
+            mut_f32 pct_done = 0.0f;
+            for (int y = 0; y < HEIGHT; ++y)
+            {
+                ++c;
+                for (int x = 0; x < PENULT_WIDTH; ++x)
+                {
+                    writeRes += fprintf_s(file, "%u %u %u ", c->r, c->g, c->b);
+                }
+                writeRes += fprintf_s(file, "%u %u %u\n", c->r, c->g, c->b);
+
+                pixels_done += WIDTH;
+                pct_done = (pixels_done * INV_PIXEL_CT) * 100.0f;
                 Console::ClearLine();
                 printf("%f%% -> %d Pixels done out of %d", pct_done, pixels_done, PIXEL_CT);
             }

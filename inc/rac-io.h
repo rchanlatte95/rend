@@ -3,6 +3,13 @@
 
 #include <iostream>
 #include <Windows.h>
+#include <filesystem>
+#include <string>
+#include <shlobj.h>
+#include <objbase.h>
+
+#pragma comment(lib,"Shell32")
+#pragma comment(lib,"Ole32")
 
 #include "rac.h"
 #include "rac-types.h"
@@ -13,6 +20,16 @@
 namespace rac::io
 {
     using namespace rac::mth;
+
+    std::filesystem::path GetDesktopPath()
+    {
+        mut_wstr p;
+        if (S_OK != SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &p)) return "";
+        std::filesystem::path result = p;
+        CoTaskMemFree(p);
+        return result;
+    }
+    std::string GetDesktopPathStr() { return GetDesktopPath().string(); }
 
     class Console
     {

@@ -276,7 +276,7 @@ static mut_ppm pathTraceResult(BLACK);
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
-	Bool writeSuccessful = pathTraceResult.ToFile("RT_RESULT");
+	Bool writeSuccessful = pathTraceResult.DBG_ToFile("RT_RESULT");
 	printf("\r\nwriteSuccessful = %s\r\n", writeSuccessful.Cstr());
 
 	/*

@@ -65,6 +65,9 @@
     <ClInclude Include="inc\rac-io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\rac-cam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="hello-tri.glsl" />
