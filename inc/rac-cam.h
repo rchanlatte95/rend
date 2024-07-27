@@ -126,7 +126,7 @@ namespace rac::cam
 
         INLINE mut_ray GetRayFromPixel(i32 x, i32 y) const noexcept
         {
-            v3 pixelPos = Viewport.GetPixelPos(x, y);
+            v3 pixelPos = Viewport.top_left_pixel_pos + (x * Viewport.pixel_delta_u) + (y * Viewport.pixel_delta_v);
             return mut_ray(Center, (pixelPos - Center));
         }
     };
