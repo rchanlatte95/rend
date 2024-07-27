@@ -84,25 +84,26 @@ namespace rac::cam
         static f32 HEIGHT;
         static f32 WIDTH;
 
-        mut_viewport(v3_ref cam_center)
+        mut_viewport() { }
+        mut_viewport(v3_ref cam_center, i32 img_height, i32 img_width)
         {
             // Calculate the vectors across the horizontal and down the vertical viewport edges.
             u = v3(WIDTH, 0.0f, 0.0f);
             v = v3(0.0f, -HEIGHT, 0.0f);
+
+            // Calculate the horizontal and vertical delta vectors from pixel to pixel.
+            pixel_delta_u = u / img_width;
+            pixel_delta_v = v / img_height;
+
+            // Calculate the location of the upper left pixel.
             v3 half_u = v3(u.x * 0.5f, 0.0f, 0.0f);
             v3 half_v = v3(0.0f, v.y * 0.5f, 0.0f);
             v3 focal_z = v3(0.0f, 0.0f, FOCAL_LENGTH);
-
-            // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-            pixel_delta_u = u / WIDTH;
-            pixel_delta_v = v / HEIGHT;
-
-            // Calculate the location of the upper left pixel.
             top_left = cam_center - focal_z - half_u - half_v;
             top_left_pixel_pos = top_left + 0.5 * (pixel_delta_u + pixel_delta_v);
         }
 
-        INLINE v3 GetViewportPixelPos(i32 x, i32 y) const noexcept
+        INLINE v3 GetPixelPos(i32 x, i32 y) const noexcept
         {
             return top_left_pixel_pos + (x * pixel_delta_u) + (y * pixel_delta_v);
         }
@@ -113,15 +114,20 @@ namespace rac::cam
     class mut_cam
     {
     public:
-        static v3 CENTER;
-        mut_viewport view;
+        mut_v3 Center;
+        mut_viewport Viewport;
+
+        mut_cam() { }
+        mut_cam(v3 cam_center, i32 img_height, i32 img_width)
+        {
+            Center = cam_center;
+            Viewport = mut_viewport(Center, img_height, img_width);
+        }
 
         INLINE mut_ray GetRayFromPixel(i32 x, i32 y) const noexcept
         {
-            v3 pixelPos = view.GetViewportPixelPos(x, y);
-            return mut_ray(mut_cam::CENTER, (pixelPos - mut_cam::CENTER));
+            v3 pixelPos = Viewport.GetPixelPos(x, y);
+            return mut_ray(Center, (pixelPos - Center));
         }
     };
-
-    v3 mut_cam::CENTER = rac::mth::V3_ZERO;
 }

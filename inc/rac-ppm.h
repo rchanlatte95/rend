@@ -50,18 +50,26 @@ namespace rac::img
         mut_color pixels[HEIGHT][WIDTH];
 
         PortablePixelMap() { }
-        //PortablePixelMap(color_ref init) { memset(pixels, (i32)init, PIXEL_BYTE_CT); }
-        PortablePixelMap(color_ref init) { memset(pixels, (i32)init, sizeof(pixels)); }
+        PortablePixelMap(color_ref init)
+        {
+            i32 k = (i32)init;
+            memset(pixels, (i32)init, PIXEL_BYTE_CT);
+        }
 
         INLINE ptr ToPtr() const noexcept { return (ptr)pixels; }
         INLINE color_ptr ToColorPtr() const noexcept { return (color_ptr)pixels; }
-        INLINE mut_color_ref operator() (u32 row, u32 col) noexcept
-        {
-            return pixels[row][col];
-        }
+        INLINE mut_color_ref operator() (u32 x, u32 y) noexcept { return pixels[y][x]; }
         INLINE color_ref operator[] (u32 idx) const noexcept
         {
             return *(&(pixels[0][0]) + idx);
+        }
+
+        INLINE void SetPixelColor(i32 x, i32 y, color_ref new_color) noexcept
+        {
+            pixels[y][x].r = new_color.r;
+            pixels[y][x].g = new_color.g;
+            pixels[y][x].b = new_color.b;
+            pixels[y][x].opacity = new_color.opacity;
         }
 
         MAY_INLINE bool DBG_ToFile(cstr filename) const
@@ -115,17 +123,18 @@ namespace rac::img
             if (file == nullptr) { return false; }
 
             mut_i64 writeRes = fprintf_s(file, "P3\n%u %u\n255\n", WIDTH, HEIGHT);
-            mut_color_ptr c = (mut_color_ptr)(pixels - 1);
             mut_i32 pixels_done = 0;
             mut_f32 pct_done = 0.0f;
+            mut_color c;
             for (int y = 0; y < HEIGHT; ++y)
             {
-                ++c;
                 for (int x = 0; x < PENULT_WIDTH; ++x)
                 {
-                    writeRes += fprintf_s(file, "%u %u %u ", c->r, c->g, c->b);
+                    c = pixels[y][x];
+                    writeRes += fprintf_s(file, "%u %u %u ", c.r, c.g, c.b);
                 }
-                writeRes += fprintf_s(file, "%u %u %u\n", c->r, c->g, c->b);
+                c = pixels[y][PENULT_WIDTH];
+                writeRes += fprintf_s(file, "%u %u %u\n", c.r, c.g, c.b);
 
                 pixels_done += WIDTH;
                 pct_done = (pixels_done * INV_PIXEL_CT) * 100.0f;

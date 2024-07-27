@@ -54,7 +54,7 @@ namespace rac::gfx
             b = _b;
             opacity = _a;
         }
-        mut_color(f32 _r, f32 _g, f32 _b, f32 _a = 1.0f)
+        mut_color(f32 _r, f32 _g, f32 _b, f32 _a)
         {
             f32 ceil_ = 255.999f;
             r = (u8)(_r * ceil_);
@@ -63,8 +63,8 @@ namespace rac::gfx
             opacity = (u8)(_a * ceil_);
         }
 
-        INLINE u32 GetU32() const noexcept { return *(u32ptr(&opacity)); }
-        INLINE i32 GetI32() const noexcept { return *(i32ptr(&opacity)); }
+        INLINE u32 GetU32() const noexcept { return *(u32ptr(&b)); }
+        INLINE i32 GetI32() const noexcept { return *(i32ptr(&b)); }
 
         INLINE f32 LinearToGamma(f32 linear_color_component) const noexcept
         {
@@ -92,7 +92,7 @@ namespace rac::gfx
         operator u32() const noexcept { return GetU32(); }
         operator i32() const noexcept { return GetI32(); }
 
-        INLINE color_ref operator=(color_ref rhs)
+        INLINE color_ref operator=(color_ref rhs) noexcept
         {
             b = rhs.b;
             g = rhs.g;
@@ -114,6 +114,7 @@ namespace rac::gfx
     color RED(MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
     color GREEN(MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
     color BLUE(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
+    color LIGHT_BLUE((u8)128, (u8)178, (u8)255);
 
     INLINE static bool operator >(color_ref lhs, color_ref rhs)
     {
@@ -157,11 +158,10 @@ namespace rac::gfx
         return color(new_r, new_g, new_b, new_opacity);
     }
 
-    static INLINE color RayColor(ray_ref r)
+    static INLINE color LerpRayColor(ray_ref r, color_ref start_color, color_ref end_color)
     {
-        v3 dir = r.dir;
-        f32 a = 0.5f * (dir.y + 1.0f);
+        f32 a = 0.5f * (r.dir.Norm().y + 1.0f);
         f32 b = 1.0f - a;
-        return b * color((u8)255, 255, 255) + a * color((u8)128, 178, 255);
+        return b * start_color + a * end_color;
     }
 }

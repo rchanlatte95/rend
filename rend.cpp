@@ -17,6 +17,7 @@
 #include "inc/rac-stack.h"
 #include "inc/rac-queue.h"
 #include "inc/rac-ppm.h"
+#include "inc/rac-cam.h"
 
 #ifdef NDEBUG
 #define RELEASE true
@@ -33,6 +34,7 @@ using namespace rac::logic;
 using namespace rac::static_collections;
 using namespace rac::gfx;
 using namespace rac::img;
+using namespace rac::cam;
 
 #pragma warning(pop)
 
@@ -272,44 +274,25 @@ static i32 PollInput()
 	return 1;
 }
 
-static mut_ppm pathTraceResult(BLACK);
+static mut_ppm pathTraceResult = mut_ppm(BLACK);
+static cam renderCam = cam(V3_ZERO, rac::img::HEIGHT, rac::img::WIDTH);
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
-	Bool writeSuccessful = pathTraceResult.DBG_ToFile("RT_RESULT");
+
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		for (int x = 0; x < WIDTH; ++x)
+		{
+			ray r = renderCam.GetRayFromPixel(x, y);
+			color col = LerpRayColor(r, WHITE, LIGHT_BLUE);
+			pathTraceResult.SetPixelColor(x, y, col);
+		}
+	}
+
+	Bool writeSuccessful = pathTraceResult.ToFile("RT_RESULT");
 	printf("\r\nwriteSuccessful = %s\r\n", writeSuccessful.Cstr());
 
-	/*
-	GetFrequency();
-	MainInit();
-
-	// NOTE(RYAN_2024-04-27):	I have no physics simulations running so I don't
-	//							anticipate any need for more sophisticated time
-	//							step handling. This is already a halfway accum
-	//							time step impl.
-	mut_f64 dt = 0.01;
-	mut_f64 accumulator = 0.0;
-	mut_f64 currentTime = GetCounter();
-
-	Bool running = true;
-	while (running)
-	{
-		mut_f64 newTime = GetCounter();
-		mut_f64 frameTime = newTime - currentTime;
-		if (frameTime > MAX_DT)
-			frameTime = MAX_DT;
-
-		currentTime = newTime;
-		accumulator += frameTime;
-		while (accumulator >= MAX_DT)
-		{
-			running = PollInput();
-			accumulator -= dt;
-		}
-
-		Render();
-	}
-	*/
 	return EXIT_SUCCESS;
 }
 
