@@ -2,12 +2,10 @@
 #pragma warning(push, 0)// Prevent warnings from libraries I can't fix.
 
 #include <float.h>
-#include <math.h>
 
 #include "rac.h"
 #include "rac-types.h"
 #include "rac-str.h"
-#include "rac-clr.h"
 
 #pragma warning(pop)
 
@@ -18,13 +16,13 @@
 #define RAC_F32_UNSIGNED_RANGE 8
 #define RAC_F32_SIGNED_RANGE (RAC_F32_UNSIGNED_RANGE + 1)
 
-i32 COMMA_CHAR_LEN = 1;
-i32 SPACE_CHAR_LEN = 1;
-i32 COMMA_SPACE_LEN = COMMA_CHAR_LEN + SPACE_CHAR_LEN;
-i32 PARENTHESES_LEN = 2;
+inline constexpr i32 COMMA_CHAR_LEN = 1;
+inline constexpr i32 SPACE_CHAR_LEN = 1;
+inline constexpr i32 COMMA_SPACE_LEN = COMMA_CHAR_LEN + SPACE_CHAR_LEN;
+inline constexpr i32 PARENTHESES_LEN = 2;
 
-i32 F32_STR_MAX = RAC_F32_SIGNED_RANGE + 3;
-i32 F32_STR_LEN = F32_STR_MAX - 1;
+inline constexpr i32 F32_STR_MAX = RAC_F32_SIGNED_RANGE + 3;
+inline constexpr i32 F32_STR_LEN = F32_STR_MAX - 1;
 namespace rac::mth
 {
     class Vector2I16;
@@ -82,15 +80,15 @@ namespace rac::mth
         if (_isnanf(a) || _isnanf(b)) return false; // Handle NaN cases
 
         // The min here handles the INF cases
-        f32 _min = min((std::fabsf(a + b)), F32_MAX);
+        f32 _min = std::fminf((std::fabsf(a + b)), F32_MAX);
         f32 norm = F32_EPSILON * _min;
-        return fabsf(a - b) < max(F32_MIN, norm);
+        return fabsf(a - b) < std::fmaxf(F32_MIN, norm);
     }
 
     static constexpr f32 NormU8(u8 x) { return (f32)x * INV_U8_MAX; }
     static constexpr f32 NormU16(u16 x) { return (f32)x * INV_U16_MAX; }
-    static constexpr f32 NormU32(u32 x) { return (f64)x * INV_U32_MAX; }
-    static constexpr f32 NormU64(u64 x) { return (f64)x * INV_U64_MAX; }
+    static constexpr f32 NormU32(u32 x) { return (f32)((f64)x * INV_U32_MAX); }
+    static constexpr f32 NormU64(u64 x) { return (f32)((f64)x * INV_U64_MAX); }
 
     static constexpr f32 NormI8(i8 x) { return NormU8((u8)x + ABS_I8_MIN); }
     static constexpr f32 NormI16(i16 x) { return NormU16((u8)x + ABS_I16_MIN); }
@@ -102,13 +100,13 @@ namespace rac::mth
         return (x - min) / (max - min);
     }
 
-    static f32 Clamp(f32 x, f32 min, f32 max)
+    static MAY_INLINE f32 Clamp(f32 x, f32 min, f32 max)
     {
         if (fabsf(x - max) > F32_EPSILON) return max;
         if (fabsf(x - min) < F32_EPSILON) return min;
         return x;
     }
-    static f32 Clamp01(f32 x)
+    static MAY_INLINE f32 Clamp01(f32 x)
     {
         if (fabsf(x - F32_ONE_EPSILON) > F32_EPSILON) return 1.0f;
         if (fabsf(x) < F32_EPSILON) return 0.0f;
@@ -223,8 +221,8 @@ namespace rac::mth
         }
     };
 
-    i32 V2_STRING_MAX = (F32_STR_LEN * 2) + COMMA_SPACE_LEN + PARENTHESES_LEN + 1;
-    i32 V2_STRING_LEN = V2_STRING_MAX - 1;
+    inline constexpr i32 V2_STRING_MAX = (F32_STR_LEN * 2) + COMMA_SPACE_LEN + PARENTHESES_LEN + 1;
+    inline constexpr i32 V2_STRING_LEN = V2_STRING_MAX - 1;
     class Vector2
     {
     public:
@@ -297,11 +295,11 @@ namespace rac::mth
             return str = buff;
         }
 
-        INLINE v2 Max(v2 v)
+        INLINE v2 Max(v2 v) const
         {
             return v2(fmaxf(x, v.x), fmaxf(y, v.y));
         }
-        INLINE v2 Min(v2 v)
+        INLINE v2 Min(v2 v) const
         {
             return v2(fminf(x, v.x), fminf(y, v.y));
         }
@@ -423,14 +421,14 @@ namespace rac::mth
         return v2(lhs.x / rhs.x, lhs.y / rhs.y);
     }
 
-    const v2 V2_ZERO = v2(0.0f, 0.0f);
-    const v2 V2_ONE = v2(1.0f, 1.0f);
-    const v2 V2_SIGNED_ONE = -V2_ONE;
+    extern v2 V2_ZERO;
+    extern v2 V2_ONE;
+    extern v2 V2_SIGNED_ONE;
 
-    const v2 V2_RIGHT = v2(1.0f, 0.0f);
-    const v2 V2_LEFT = -V2_RIGHT;
-    const v2 V2_UP = v2(0.0f, 1.0f);
-    const v2 V2_DOWN = -V2_UP;
+    extern v2 V2_RIGHT;
+    extern v2 V2_LEFT;
+    extern v2 V2_UP;
+    extern v2 V2_DOWN;
 
     // Check if two vectors are approximately equal
     static MAY_INLINE bool Approx(v2_ref a, v2_ref b)
@@ -472,8 +470,8 @@ namespace rac::mth
         return res;
     }
 
-    i32 V3_STRING_MAX = (F32_STR_LEN * 3) + (COMMA_SPACE_LEN * 2) + PARENTHESES_LEN + 1;
-    i32 V3_STRING_LEN = V3_STRING_MAX - 1;
+    inline constexpr i32 V3_STRING_MAX = (F32_STR_LEN * 3) + (COMMA_SPACE_LEN * 2) + PARENTHESES_LEN + 1;
+    inline constexpr i32 V3_STRING_LEN = V3_STRING_MAX - 1;
     class Vector3
     {
     public:
@@ -611,11 +609,11 @@ namespace rac::mth
             return str = buff;
         }
 
-        INLINE v3 Max(v3 v)
+        INLINE v3 Max(v3 v) const
         {
             return v3(fmaxf(x, v.x), fmaxf(y, v.y), fmaxf(z, v.z));
         }
-        INLINE v3 Min(v3 v)
+        INLINE v3 Min(v3 v) const
         {
             return v3(fminf(x, v.x), fminf(y, v.y), fminf(z, v.z));
         }
@@ -783,20 +781,20 @@ namespace rac::mth
                     v1.x * v2.y - v1.y * v2.x);
     }
 
-    const v3 V3_ZERO = v3(0.0f);
-    const v3 V3_ONE = v3(1.0f);
-    const v3 V3_SIGNED_ONE = -V3_ONE;
+    extern v3 V3_ZERO;
+    extern v3 V3_ONE;
+    extern v3 V3_SIGNED_ONE;
 
-    const v3 V3_RIGHT =     v3(1.0f, 0.0f, 0.0f);
-    const v3 V3_UP =        v3(0.0f, 1.0f, 0.0f);
-    const v3 V3_FORWARD =   v3(0.0f, 0.0f, 1.0f);
+    extern v3 V3_RIGHT;
+    extern v3 V3_UP;
+    extern v3 V3_FORWARD;
 
-    const v3 V3_LEFT = -V3_RIGHT;
-    const v3 V3_DOWN = -V3_UP;
-    const v3 V3_BACKWARD = -V3_FORWARD;
+    extern v3 V3_LEFT;
+    extern v3 V3_DOWN;
+    extern v3 V3_BACKWARD;
 
-    i32 QUAT_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
-    i32 QUAT_STRING_LEN = QUAT_STRING_MAX - 1;
+    inline constexpr i32 QUAT_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
+    inline constexpr i32 QUAT_STRING_LEN = QUAT_STRING_MAX - 1;
     class Quaternion
     {
     public:
@@ -910,10 +908,10 @@ namespace rac::mth
             return str = buff;
         }
     };
-    quat IDENTITY = { 0.0f, 0.0f, 0.0f, 1.0f };
+    extern quat IDENTITY;
 
-    i32 V4_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
-    i32 V4_STRING_LEN = V4_STRING_MAX - 1;
+    inline constexpr i32 V4_STRING_MAX = (F32_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 1;
+    inline constexpr i32 V4_STRING_LEN = V4_STRING_MAX - 1;
     class Vector4
     {
     public:
@@ -1057,11 +1055,11 @@ namespace rac::mth
             return str = buff;
         }
 
-        INLINE v4 Max(v4 v)
+        INLINE v4 Max(v4 v) const
         {
             return v4(fmaxf(v0, v.v0), fmaxf(v1, v.v1), fmaxf(v2, v.v2), fmaxf(v3, v.v3));
         }
-        INLINE v4 Min(v4 v)
+        INLINE v4 Min(v4 v) const
         {
             return v4(fminf(v0, v.v0), fminf(v1, v.v1), fminf(v2, v.v2), fminf(v3, v.v3));
         }
@@ -1124,12 +1122,12 @@ namespace rac::mth
         }
     };
 
-    const v4 V4_ZERO = v4(0.0f);
-    const v4 V4_ONE = v4(1.0f);
-    const v4 V4_SIGNED_ONE = -V4_ONE;
+    extern v4 V4_ZERO;
+    extern v4 V4_ONE;
+    extern v4 V4_SIGNED_ONE;
 
     // Matrix type (OpenGL style 4x4 - right handed, column major)
-    i32 MATRIX_RANK = 4;
+    inline constexpr i32 MATRIX_RANK = 4;
     class Matrix
     {
     public:
@@ -1164,7 +1162,7 @@ namespace rac::mth
             r2c0 = off_diagonal_; r2c1 = off_diagonal_; r2c2 = main_diagonal; r2c3 = off_diagonal_;
             r3c0 = off_diagonal_; r3c1 = off_diagonal_; r3c2 = off_diagonal_; r3c3 = main_diagonal;
         }
-        Matrix(f32 inv_diagonal, f32 off_diagonal, bool inverse_diagonal)
+        Matrix(f32 inv_diagonal, f32 off_diagonal, bool)
         {
             r0c0 = off_diagonal; r0c1 = off_diagonal; r0c2 = off_diagonal; r0c3 = inv_diagonal;
             r1c0 = off_diagonal; r1c1 = off_diagonal; r1c2 = inv_diagonal; r1c3 = off_diagonal;

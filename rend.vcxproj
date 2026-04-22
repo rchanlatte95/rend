@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -135,6 +135,8 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
       <DisableSpecificWarnings>26819;26495;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableIncludeCleanup>false</EnableIncludeCleanup>
+      <DisableAnalyzeIncludeCleanup>true</DisableAnalyzeIncludeCleanup>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,6 +173,8 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>26819;26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableIncludeCleanup>false</EnableIncludeCleanup>
+      <DisableAnalyzeIncludeCleanup>true</DisableAnalyzeIncludeCleanup>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -183,6 +187,15 @@
   <ItemGroup>
     <ClCompile Include="inc\external\GLAD\src\glad.c" />
     <ClCompile Include="rend.cpp" />
+    <ClCompile Include="src\rac.cpp" />
+    <ClCompile Include="src\rac-mth.cpp" />
+    <ClCompile Include="src\rac-clr.cpp" />
+    <ClCompile Include="src\rac-io.cpp" />
+    <ClCompile Include="src\rac-ppm.cpp" />
+    <ClCompile Include="src\rac-gl.cpp" />
+    <ClCompile Include="src\rac-cam.cpp" />
+    <ClCompile Include="src\rac-png.cpp" />
+    <ClCompile Include="src\stb_image_write_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\rac-cam.h" />
@@ -198,6 +211,7 @@
     <ClInclude Include="inc\rac-stack.h" />
     <ClInclude Include="inc\rac-str.h" />
     <ClInclude Include="inc\rac-types.h" />
+    <ClInclude Include="inc\rac-png.h" />
     <ClInclude Include="inc\rac.h" />
   </ItemGroup>
   <ItemGroup>

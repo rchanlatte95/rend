@@ -5,17 +5,13 @@
 #include <filesystem>
 #include <string>
 
-#include <shlobj.h>
-
-#pragma comment(lib,"Shell32")
-#pragma comment(lib,"Ole32")
-
 #include "rac.h"
 #include "rac-mth.h"
 #include "rac-types.h"
 #include "rac-str.h"
 #include "rac-clr.h"
 #include "rac-io.h"
+#include "rac-ppm.h"
 
 #pragma warning(pop)
 
@@ -25,32 +21,26 @@ namespace rac::img
     using namespace rac::string;
     using namespace rac::io;
 
-    class PortablePixelMap;
-    typedef const PortablePixelMap ppm;    typedef PortablePixelMap mut_ppm;
-    typedef const PortablePixelMap* ppm_ptr;   typedef const PortablePixelMap& ppm_ref;
-    typedef PortablePixelMap* mut_ppm_ptr; typedef PortablePixelMap& mut_ppm_ref;
+    class PortableNetworkGraphic;
+    typedef const PortableNetworkGraphic png;    typedef PortableNetworkGraphic mut_png;
+    typedef const PortableNetworkGraphic* png_ptr;   typedef const PortableNetworkGraphic& png_ref;
+    typedef PortableNetworkGraphic* mut_png_ptr; typedef PortableNetworkGraphic& mut_png_ref;
 
-    inline constexpr i32 WIDTH = 1536;
-    inline constexpr i32 HEIGHT = 1024;
-    inline constexpr i32 PENULT_WIDTH = WIDTH - 1;
-    inline constexpr i32 PENULT_HEIGHT = HEIGHT - 1;
-    inline constexpr i32 PIXEL_CT = WIDTH * HEIGHT;
-    inline constexpr i32 PIXEL_BYTE_CT = PIXEL_CT * sizeof(color);
-    inline constexpr u64 PPM_HEADER_STR_CAP = 18;
-    inline constexpr u64 PPM_HEADER_STR_LEN = PPM_HEADER_STR_CAP - 1;
-    inline constexpr f32 PPM_ASPECT_RATIO = (f32)WIDTH / (f32)HEIGHT;
-    inline constexpr f32 INV_PIXEL_CT = 1.0f / (float)PIXEL_CT;
-    extern SmallStaticStr PPM_FILE_EXT;
+    extern SmallStaticStr PNG_FILE_EXT;
 
-    class alignas(WIN_PAGE_SIZE) PortablePixelMap
+    class alignas(WIN_PAGE_SIZE) PortableNetworkGraphic
     {
     public:
         mut_color pixels[HEIGHT][WIDTH];
 
-        PortablePixelMap() { }
-        PortablePixelMap(color_ref init)
+        PortableNetworkGraphic() { }
+        PortableNetworkGraphic(color_ref init)
         {
             memset(pixels, (i32)init, PIXEL_BYTE_CT);
+        }
+        PortableNetworkGraphic(ppm_ref source)
+        {
+            memcpy(pixels, source.ToPtr(), PIXEL_BYTE_CT);
         }
 
         INLINE ptr ToPtr() const noexcept { return (ptr)pixels; }
@@ -69,7 +59,6 @@ namespace rac::img
             pixels[y][x].opacity = new_color.opacity;
         }
 
-        bool DBG_ToFile(cstr filename) const;
         bool ToFile(cstr filename) const;
     };
 }

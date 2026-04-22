@@ -1,22 +1,25 @@
 #pragma warning(push, 0)
 
 #include <windows.h>
-#include <vector>
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <SDL.h>
 #include <glad.h>
 #include <khrplatform.h>
-
-#include "inc/rac.h"
-#include "inc/rac-clr.h"
 #include "inc/rac-types.h"
+#include "inc/rac.h"
 #include "inc/rac-logic.h"
+#include "inc/rac-str.h"
 #include "inc/rac-mth.h"
+#include "inc/rac-clr.h"
+#include "inc/rac-io.h"
 #include "inc/rac-gl.h"
 #include "inc/rac-stack.h"
 #include "inc/rac-queue.h"
 #include "inc/rac-ppm.h"
+#include "inc/rac-png.h"
 #include "inc/rac-cam.h"
 
 #ifdef NDEBUG
@@ -274,18 +277,45 @@ static i32 PollInput()
 	return 1;
 }
 
-static mut_ppm pathTraceResult = mut_ppm(BLACK);
+static f32 HitSphere(v3_ref center, f32 radius, ray_ref r)
+{
+	v3 oc = r.origin - center;
+	f32 a = r.dir.Dot(r.dir);
+	f32 b = 2.0f * oc.Dot(r.dir);
+	f32 c = oc.Dot(oc) - radius * radius;
+	mut_f32 discriminant = b * b - 4.0f * a * c;
+	if (discriminant < 0.0f) return -1.0f;
+	return (-b - sqrtf(discriminant)) / (2.0f * a);
+}
+
+static color RayColor(ray_ref r, v3_ref sphere_center, f32 sphere_radius)
+{
+	f32 t = HitSphere(sphere_center, sphere_radius, r);
+	if (t > 0.0f)
+	{
+		v3 normal = (r.origin + r.dir * t - sphere_center).Norm();
+		return color((u8)(127.999f * (normal.x + 1.0f)),
+		             (u8)(127.999f * (normal.y + 1.0f)),
+		             (u8)(127.999f * (normal.z + 1.0f)));
+	}
+	return LerpRayColor(r, WHITE, LIGHT_BLUE);
+}
+
+static mut_png pathTraceResult = mut_png(BLACK);
 static cam renderCam = cam(V3_ZERO, rac::img::HEIGHT, rac::img::WIDTH);
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
+
+	v3 sphere_center = v3(0.0f, 0.0f, -1.0f);
+	f32 sphere_radius = 0.5f;
 
 	for (int y = 0; y < HEIGHT; ++y)
 	{
 		for (int x = 0; x < WIDTH; ++x)
 		{
 			ray r = renderCam.GetRayFromPixel(x, y);
-			color col = LerpRayColor(r, WHITE, LIGHT_BLUE);
+			color col = RayColor(r, sphere_center, sphere_radius);
 			pathTraceResult.SetPixelColor(x, y, col);
 		}
 	}

@@ -25,18 +25,18 @@ namespace rac::gfx
     #define LUMA_REC709_G 0.7152f
     #define LUMA_REC709_B 0.0722f
 
-    u8 MAX_COLOR_COMPONENT_VALUE = 255;
-    u8 MIN_COLOR_COMPONENT_VALUE = 0;
+    inline constexpr u8 MAX_COLOR_COMPONENT_VALUE = 255;
+    inline constexpr u8 MIN_COLOR_COMPONENT_VALUE = 0;
 
     #define BYTE_DIGIT_CT 3
-    i32 BYTE_STR_MAX = BYTE_DIGIT_CT + 1;
-    i32 BYTE_STR_LEN = BYTE_DIGIT_CT;
-    i32 COLOR_STRING_MAX = (BYTE_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 2;
-    i32 COLOR_STRING_LEN = COLOR_STRING_MAX - 1;
-    i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 3) + 1;
-    i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
-    f32 GAMMA = 2.2222222f;
-    f32 INV_GAMMA = 1.0f / GAMMA;
+    inline constexpr i32 BYTE_STR_MAX = BYTE_DIGIT_CT + 1;
+    inline constexpr i32 BYTE_STR_LEN = BYTE_DIGIT_CT;
+    inline constexpr i32 COLOR_STRING_MAX = (BYTE_STR_LEN * 4) + (COMMA_SPACE_LEN * 3) + PARENTHESES_LEN + 2;
+    inline constexpr i32 COLOR_STRING_LEN = COLOR_STRING_MAX - 1;
+    inline constexpr i32 PPM_STRING_MAX = (BYTE_STR_LEN * 3) + (SPACE_CHAR_LEN * 3) + 1;
+    inline constexpr i32 PPM_STRING_LEN = PPM_STRING_MAX - 1;
+    inline constexpr f32 GAMMA = 2.2222222f;
+    inline constexpr f32 INV_GAMMA = 1.0f / GAMMA;
     class alignas(4) mut_color
     {
     public:
@@ -68,12 +68,12 @@ namespace rac::gfx
 
         INLINE f32 LinearToGamma(f32 linear_color_component) const noexcept
         {
-            return powf(NormU8(linear_color_component), INV_GAMMA);
+            return powf(NormU8((u8)linear_color_component), INV_GAMMA);
         }
 
         INLINE f32 GammaToLinear(f32 gamma_color_component) const noexcept
         {
-            return powf(NormU8(gamma_color_component), GAMMA);
+            return powf(NormU8((u8)gamma_color_component), GAMMA);
         }
 
         INLINE color Luminance() const noexcept
@@ -109,12 +109,12 @@ namespace rac::gfx
         }
     };
 
-    color WHITE(MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
-    color BLACK(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
-    color RED(MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
-    color GREEN(MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE);
-    color BLUE(MIN_COLOR_COMPONENT_VALUE, MIN_COLOR_COMPONENT_VALUE, MAX_COLOR_COMPONENT_VALUE);
-    color LIGHT_BLUE((u8)128, (u8)178, (u8)255);
+    extern color WHITE;
+    extern color BLACK;
+    extern color RED;
+    extern color GREEN;
+    extern color BLUE;
+    extern color LIGHT_BLUE;
 
     INLINE static bool operator >(color_ref lhs, color_ref rhs)
     {
@@ -143,11 +143,10 @@ namespace rac::gfx
 
     INLINE static color operator *(f32 factor, color_ref rhs)
     {
-        f32 r_f = (f32)rhs.r * factor;
-        f32 g_f = (f32)rhs.g * factor;
-        f32 b_f = (f32)rhs.b * factor;
-        f32 a_f = (f32)rhs.opacity * factor;
-        return color(r_f, g_f, b_f, a_f);
+        return color((u8)((f32)rhs.r * factor),
+                     (u8)((f32)rhs.g * factor),
+                     (u8)((f32)rhs.b * factor),
+                     (u8)((f32)rhs.opacity * factor));
     }
     INLINE static color operator +(color_ref lhs, color_ref rhs)
     {
