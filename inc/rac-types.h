@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <gl/GL.h>
+#include <SDL.h>
 #pragma warning(pop)
 
 #ifndef RAC

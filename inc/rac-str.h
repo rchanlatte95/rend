@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdlib.h>
 #include <filesystem>
 #include "rac-types.h"
 #include "rac-logic.h"
@@ -159,7 +158,7 @@ namespace rac::string
                 return *this;
             }
 
-            char tmp[STATIC_STR_TARGET_BYTE_SIZE];
+            char tmp[STATIC_STR_TARGET_BYTE_SIZE] = { 0 };
             size_t tmp_len = 0;
             wcstombs_s(&tmp_len, (char*)tmp, cap, rhs, cap);
 
@@ -428,14 +427,14 @@ namespace rac::string
 
         INLINE SmallStrRef operator+=(cstr rhs)
         {
-            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
+            if (len >= SMALL_STATIC_STR_CAPACITY) return *this;
 
             i32 rhs_len = (i32)strnlen_s(rhs, SMALL_STATIC_STR_CAPACITY);
             i32 new_len = len + rhs_len;
-            if (new_len > SMALL_STATIC_STR_CAPACITY)
+            if (new_len >= SMALL_STATIC_STR_CAPACITY)
                 return *this;
 
-            memcpy_s(chars + len, new_len, rhs, rhs_len);
+            memcpy_s(chars + len, (size_t)(SMALL_STATIC_STR_CAPACITY - len), rhs, rhs_len);
             len = new_len;
             chars[len] = 0;
 
@@ -443,13 +442,13 @@ namespace rac::string
         }
         INLINE SmallStrRef operator+=(SmallStrRef rhs)
         {
-            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
+            if (len >= SMALL_STATIC_STR_CAPACITY) return *this;
 
             i32 new_len = len + rhs.len;
-            if (new_len > SMALL_STATIC_STR_CAPACITY)
+            if (new_len >= SMALL_STATIC_STR_CAPACITY)
                 return *this;
 
-            memcpy_s(chars + len, new_len, rhs.chars, rhs.len);
+            memcpy_s(chars + len, (size_t)(SMALL_STATIC_STR_CAPACITY - len), rhs.chars, rhs.len);
             len = new_len;
             chars[len] = 0;
 
@@ -457,7 +456,7 @@ namespace rac::string
         }
         INLINE SmallStrRef operator+=(u8 c)
         {
-            if (len > SMALL_STATIC_STR_CAPACITY) return *this;
+            if (len >= SMALL_STATIC_STR_CAPACITY) return *this;
             chars[len++] = c;
             return *this;
         }

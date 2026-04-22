@@ -70,7 +70,7 @@ namespace rac::cam
         INLINE v2 SetBotRight(f32 x, f32 y) { return right = x; bot = y; }
     };
 
-    f32 FOCAL_LENGTH = 1.0f;
+    inline constexpr f32 FOCAL_LENGTH = 1.0f;
     class alignas(8) mut_viewport
     {
     public:
@@ -92,8 +92,8 @@ namespace rac::cam
             v = v3(0.0f, -HEIGHT, 0.0f);
 
             // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-            pixel_delta_u = u / img_width;
-            pixel_delta_v = v / img_height;
+            pixel_delta_u = u / (f32)img_width;
+            pixel_delta_v = v / (f32)img_height;
 
             // Calculate the location of the upper left pixel.
             v3 half_u = v3(u.x * 0.5f, 0.0f, 0.0f);
@@ -105,12 +105,11 @@ namespace rac::cam
 
         INLINE v3 GetPixelPos(i32 x, i32 y) const noexcept
         {
-            return top_left_pixel_pos + (x * pixel_delta_u) + (y * pixel_delta_v);
+            return top_left_pixel_pos + ((f32)x * pixel_delta_u) + ((f32)y * pixel_delta_v);
         }
     };
-    f32 mut_viewport::HEIGHT = 2.0f;
-    f32 mut_viewport::WIDTH = HEIGHT * PPM_ASPECT_RATIO;
-
+#pragma warning(push)
+#pragma warning(disable: 4324)
     class mut_cam
     {
     public:
@@ -126,8 +125,9 @@ namespace rac::cam
 
         INLINE mut_ray GetRayFromPixel(i32 x, i32 y) const noexcept
         {
-            v3 pixelPos = Viewport.top_left_pixel_pos + (x * Viewport.pixel_delta_u) + (y * Viewport.pixel_delta_v);
+            v3 pixelPos = Viewport.top_left_pixel_pos + ((f32)x * Viewport.pixel_delta_u) + ((f32)y * Viewport.pixel_delta_v);
             return mut_ray(Center, (pixelPos - Center));
         }
     };
+#pragma warning(pop)
 }

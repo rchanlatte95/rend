@@ -1,18 +1,21 @@
 #pragma warning(push, 0)
 
 #include <windows.h>
-#include <vector>
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <SDL.h>
 #include <glad.h>
 #include <khrplatform.h>
 
-#include "inc/rac.h"
-#include "inc/rac-clr.h"
 #include "inc/rac-types.h"
+#include "inc/rac.h"
 #include "inc/rac-logic.h"
+#include "inc/rac-str.h"
 #include "inc/rac-mth.h"
+#include "inc/rac-clr.h"
+#include "inc/rac-io.h"
 #include "inc/rac-gl.h"
 #include "inc/rac-stack.h"
 #include "inc/rac-queue.h"

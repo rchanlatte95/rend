@@ -135,6 +135,8 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
       <DisableSpecificWarnings>26819;26495;4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableIncludeCleanup>false</EnableIncludeCleanup>
+      <DisableAnalyzeIncludeCleanup>true</DisableAnalyzeIncludeCleanup>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,6 +173,8 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>26819;26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableIncludeCleanup>false</EnableIncludeCleanup>
+      <DisableAnalyzeIncludeCleanup>true</DisableAnalyzeIncludeCleanup>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -183,6 +187,13 @@
   <ItemGroup>
     <ClCompile Include="inc\external\GLAD\src\glad.c" />
     <ClCompile Include="rend.cpp" />
+    <ClCompile Include="src\rac.cpp" />
+    <ClCompile Include="src\rac-mth.cpp" />
+    <ClCompile Include="src\rac-clr.cpp" />
+    <ClCompile Include="src\rac-io.cpp" />
+    <ClCompile Include="src\rac-ppm.cpp" />
+    <ClCompile Include="src\rac-gl.cpp" />
+    <ClCompile Include="src\rac-cam.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\rac-cam.h" />
