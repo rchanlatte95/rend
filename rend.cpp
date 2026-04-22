@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include <SDL.h>
 #include <glad.h>
@@ -21,6 +22,10 @@
 #include "inc/rac-ppm.h"
 #include "inc/rac-png.h"
 #include "inc/rac-cam.h"
+
+#pragma warning(push, 0)
+#include <gif.h>
+#pragma warning(pop)
 
 #ifdef NDEBUG
 #define RELEASE true
@@ -295,33 +300,77 @@ static color RayColor(ray_ref r, v3_ref sphere_center, f32 sphere_radius)
 	{
 		v3 normal = (r.origin + r.dir * t - sphere_center).Norm();
 		return color((u8)(127.999f * (normal.x + 1.0f)),
-		             (u8)(127.999f * (normal.y + 1.0f)),
-		             (u8)(127.999f * (normal.z + 1.0f)));
+		            (u8)(127.999f * (normal.y + 1.0f)),
+		            (u8)(127.999f * (normal.z + 1.0f)));
 	}
 	return LerpRayColor(r, WHITE, LIGHT_BLUE);
 }
 
-static mut_png pathTraceResult = mut_png(BLACK);
+static void RenderFrame(mut_png_ref frame, cam_ref cam, v3_ref sphere_center, f32 sphere_radius)
+{
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		for (int x = 0; x < WIDTH; ++x)
+		{
+			ray r = cam.GetRayFromPixel(x, y);
+			color col = RayColor(r, sphere_center, sphere_radius);
+			frame.SetPixelColor(x, y, col);
+		}
+	}
+}
+
+static void FrameToRGBA(png_ref frame, mut_u8* rgba)
+{
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		for (int x = 0; x < WIDTH; ++x)
+		{
+			i32 idx = (y * WIDTH + x) * 4;
+			rgba[idx + 0] = frame[y * WIDTH + x].r;
+			rgba[idx + 1] = frame[y * WIDTH + x].g;
+			rgba[idx + 2] = frame[y * WIDTH + x].b;
+			rgba[idx + 3] = 255;
+		}
+	}
+}
+
 static cam renderCam = cam(V3_ZERO, rac::img::HEIGHT, rac::img::WIDTH);
 int main(int argc, char* argv[])
 {
 	(void)argc; argv = NULL;
 
-	v3 sphere_center = v3(0.0f, 0.0f, -1.0f);
-	f32 sphere_radius = 0.5f;
+	i32 FRAME_CT = 12;
+	i32 FRAME_DELAY_CS = 100 / FRAME_CT; // centiseconds per frame (GIF uses centiseconds)
 
-	for (int y = 0; y < HEIGHT; ++y)
+	v3 sphere_center = v3(0.0f, 0.0f, -1.0f);
+	f32 start_radius = 0.5f;
+	f32 end_radius = 0.05f;
+
+	std::string gifPath = rac::io::GetDesktopPathStr() + "\\RT_RESULT.gif";
+
+	GifWriter gif;
+	GifBegin(&gif, gifPath.c_str(), WIDTH, HEIGHT, FRAME_DELAY_CS);
+
+	mut_u8* rgba = (mut_u8*)malloc(WIDTH * HEIGHT * 4);
+	mut_png* frame = new mut_png();
+
+	for (int i = 0; i < FRAME_CT; ++i)
 	{
-		for (int x = 0; x < WIDTH; ++x)
-		{
-			ray r = renderCam.GetRayFromPixel(x, y);
-			color col = RayColor(r, sphere_center, sphere_radius);
-			pathTraceResult.SetPixelColor(x, y, col);
-		}
+		f32 t = (f32)i / (f32)(FRAME_CT - 1);
+		f32 radius = start_radius + t * (end_radius - start_radius);
+
+		printf("\r\nRendering frame %d/%d (radius=%.3f)...", i + 1, FRAME_CT, radius);
+
+		RenderFrame(*frame, renderCam, sphere_center, radius);
+		FrameToRGBA(*frame, rgba);
+		GifWriteFrame(&gif, rgba, WIDTH, HEIGHT, FRAME_DELAY_CS);
 	}
 
-	Bool writeSuccessful = pathTraceResult.ToFile("RT_RESULT");
-	printf("\r\nwriteSuccessful = %s\r\n", writeSuccessful.Cstr());
+	GifEnd(&gif);
+	delete frame;
+	free(rgba);
+
+	printf("\r\nGIF written to: %s\r\n", gifPath.c_str());
 
 	return EXIT_SUCCESS;
 }
