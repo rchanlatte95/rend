@@ -143,11 +143,10 @@ namespace rac::gfx
 
     INLINE static color operator *(f32 factor, color_ref rhs)
     {
-        f32 r_f = (f32)rhs.r * factor;
-        f32 g_f = (f32)rhs.g * factor;
-        f32 b_f = (f32)rhs.b * factor;
-        f32 a_f = (f32)rhs.opacity * factor;
-        return color(r_f, g_f, b_f, a_f);
+        return color((u8)((f32)rhs.r * factor),
+                     (u8)((f32)rhs.g * factor),
+                     (u8)((f32)rhs.b * factor),
+                     (u8)((f32)rhs.opacity * factor));
     }
     INLINE static color operator +(color_ref lhs, color_ref rhs)
     {
